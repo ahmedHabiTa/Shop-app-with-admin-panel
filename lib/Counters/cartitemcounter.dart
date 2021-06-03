@@ -6,20 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
-class CartItemCounter extends ChangeNotifier {
-  int _counter = EcommerceApp.sharedPreferences
-          .getStringList(EcommerceApp.userCartList)
-          .length -
-      1;
+class CartItemCounter with ChangeNotifier {
+  int _counter ;
 
   int get count => _counter;
 
   Future<void> displayResult() async {
-    int _counter = EcommerceApp.sharedPreferences
+     _counter = EcommerceApp.sharedPreferences
             .getStringList(EcommerceApp.userCartList)
-            .length-1;
+            .length-1 ;
     notifyListeners();
-
   }
 
   Future<void> removeItemFromCart(String productShortInfo) async {
@@ -38,7 +34,6 @@ class CartItemCounter extends ChangeNotifier {
           .setStringList(EcommerceApp.userCartList, tempCartList);
 
     });
-
     notifyListeners();
   }
 

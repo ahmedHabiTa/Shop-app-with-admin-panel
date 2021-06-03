@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:commerce/Address/check_out_address.dart';
-import 'package:commerce/Admin/uploadItems.dart';
+import 'package:commerce/Admin/admin_drawer.dart';
+import 'package:commerce/Admin/admin_home_screen.dart';
+import 'package:commerce/Admin/admin_orders_screen.dart';
 import 'package:commerce/Config/config.dart';
 import 'package:commerce/Widgets/loadingWidget.dart';
-import 'package:commerce/Widgets/orderCard.dart';
 import 'package:commerce/Models/address.dart';
+import 'package:commerce/Widgets/wideButton.dart';
+import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 
-import 'adminShiftOrders.dart';
 
 String getOrderId = "";
 class AdminOrderDetails extends StatelessWidget {
@@ -24,13 +26,21 @@ class AdminOrderDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     getOrderId =orderID ;
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
     return SafeArea(
       child: Scaffold(
+        floatingActionButton: WideButton(
+        message: 'Back',
+        onPressed: () {
+          Route route = MaterialPageRoute(builder: (c) => AdminOrdersScreen());
+          Navigator.pushReplacement(context, route);
+        },
+      ),
+        drawer: AdminDrawer(),
         body: SingleChildScrollView(
           child: FutureBuilder<DocumentSnapshot>(
             future: EcommerceApp.firestore.collection(EcommerceApp.collectionOrders)
                 .doc(getOrderId).get(),
-
             builder: (c,snapshot){
               Map dataMap ;
               if(snapshot.hasData){
@@ -40,41 +50,44 @@ class AdminOrderDetails extends StatelessWidget {
                   ? Container(
                 child: Column(
                   children: <Widget>[
+                    SizedBox(height: 20,),
                     AdminStatusBanner(status: dataMap[EcommerceApp.isSuccess],),
                     SizedBox(height: 10,),
                     Padding(
                       padding: EdgeInsets.all(4),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('\$ ' + dataMap[EcommerceApp.totalAmount].toString(),style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-
+                        child: Center(
+                            child: Text(
+                              'Total price : EGP ' +
+                                  dataMap[EcommerceApp.totalAmount]
+                                      .toString(),
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            )),
                       ),
                     ),
                     Padding(
                       padding: EdgeInsets.all(4),
-                      child: Text('Order ID' + getOrderId),
+                      child: Text('Order ID : ' + getOrderId),
                     ),
                     Padding(
                       padding: EdgeInsets.all(4),
-                      child: Text('Ordered at :' + DateFormat("dd MMMM,yyyy - hh:mm aa")
-                          .format(DateTime.fromMillisecondsSinceEpoch(int.parse(dataMap['orderTime']))),
-                        style: TextStyle(color: Colors.grey,fontSize: 16),
+                      child: Text(
+                        'Ordered at :' +
+                            DateFormat("dd MMMM,yyyy - hh:mm aa").format(
+                                DateTime.fromMillisecondsSinceEpoch(
+                                    int.parse(dataMap['orderTime']))),
+                        style: TextStyle(
+                            color: themeMode == ThemeMode.dark
+                                ? Colors.grey[300]
+                                : Colors.black87,
+                            fontSize: 16),
                       ),
                     ),
-                    Divider(height: 2,),
-                    FutureBuilder<QuerySnapshot>(
-                      future: EcommerceApp.firestore.collection('items')
-                          .where('shortInfo',whereIn: dataMap[EcommerceApp.productID]).get(),
-                      builder: (c,dataSnapshot){
-                        return dataSnapshot.hasData
-                            ? OrderCard(
-                          itemCount: dataSnapshot.data.docs.length,
-                          data:  dataSnapshot.data.docs,
-                        )
-                            : Center(child: circularProgress(),);
-                      },
+                    Divider(
+                      height: 4,
                     ),
-                    Divider(height: 2,),
                     FutureBuilder<DocumentSnapshot>(
                       future: EcommerceApp.firestore.collection(EcommerceApp.collectionUser)
                           .doc(orderBy)
@@ -108,38 +121,54 @@ class AdminStatusBanner extends StatelessWidget {
     IconData iconData ;
     status ? iconData = Icons.done : iconData = Icons.cancel ;
     status ? msg = "Successfully" : msg= "UnSuccessfully" ;
-
-    return Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.pink, Colors.lightGreenAccent],
-            begin: const FractionalOffset(0, 0),
-            end: FractionalOffset(1, 0),
-            stops: [0, 1],
-            tileMode: TileMode.clamp,
-          )),
-      height: 40,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.arrow_back,color: Colors.black,),
-            onPressed: (){
-              Route route = MaterialPageRoute(builder: (c)=>AdminShiftOrders());
-              Navigator.pushReplacement(context, route);
-            },
-          ),
-          SizedBox(width: 20,),
-          Text("Order shipped "+ msg,style: TextStyle(color: Colors.white),),
-          SizedBox(width: 5,),
-          CircleAvatar(
-            radius: 8,
-            backgroundColor: Colors.grey,
-            child: Center(
-              child: Icon(iconData,color: Colors.white,size: 14,),
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
+    return Card(
+      margin: EdgeInsets.only(right: 10, left: 10),
+      color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        margin: EdgeInsets.all(1),
+        width: MediaQuery.of(context).size.width,
+        height: 50,
+        decoration: BoxDecoration(
+          color: themeMode == ThemeMode.dark
+              ? Theme.of(context).canvasColor
+              : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              width: 20,
             ),
-          ),
-        ],
+            Text(
+              "Order Placed " + msg,
+              style: TextStyle(
+                  color: themeMode == ThemeMode.dark
+                      ? Colors.white
+                      : Colors.black87,
+                  fontSize: 20),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            CircleAvatar(
+              radius: 15,
+              backgroundColor:
+              themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
+              child: Center(
+                child: Icon(
+                  iconData,
+                  color: themeMode == ThemeMode.dark
+                      ? Colors.black87
+                      : Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -153,81 +182,86 @@ class AdminShippingDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width ;
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Text('Shipment Details',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+          child: Text(
+            'Shipment Details : ',
+            style: Theme.of(context).textTheme.headline3,
+          ),
         ),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 90,vertical: 5),
-          width: screenWidth,
-          child: Table(
-            children: [
-              TableRow(
-                  children: [
-                    KeyText(msg: "Name",),
-                    Text(model.name),
-                  ]
+        Card(
+          semanticContainer: true,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
+          child: Padding(
+            padding: EdgeInsets.all(1),
+            child: Container(
+              decoration: BoxDecoration(
+                color: themeMode == ThemeMode.dark
+                    ? Theme.of(context).canvasColor
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(20),
               ),
-              TableRow(
+              child: Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Table(
                   children: [
-                    KeyText(msg: "Phone number",),
-                    Text(model.phoneNumber),
-                  ]
+                    TableRow(children: [
+                      Text(
+                        "Name : ",
+                        style: Theme.of(context).textTheme.headline3,
+                      ),
+                      Text(
+                        model.name,
+                        style: Theme.of(context).textTheme.headline3,
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text("Phone : ", style: Theme.of(context).textTheme.headline3),
+                      Text(model.phoneNumber,
+                          style: Theme.of(context).textTheme.headline3),
+                    ]),
+                    TableRow(children: [
+                      Text("Flat : ", style: Theme.of(context).textTheme.headline3),
+                      Text(model.flatNumber,
+                          style: Theme.of(context).textTheme.headline3),
+                    ]),
+                    TableRow(children: [
+                      Text("City : ", style: Theme.of(context).textTheme.headline3),
+                      Text(model.city, style: Theme.of(context).textTheme.headline3),
+                    ]),
+                    TableRow(children: [
+                      Text("Country : ",
+                          style: Theme.of(context).textTheme.headline3),
+                      Text(model.state, style: Theme.of(context).textTheme.headline3),
+                    ]),
+                    TableRow(children: [
+                      Text("Pin Code : ",
+                          style: Theme.of(context).textTheme.headline3),
+                      Text(model.pincode,
+                          style: Theme.of(context).textTheme.headline3),
+                    ]),
+                  ],
+                ),
               ),
-              TableRow(
-                  children: [
-                    KeyText(msg: "Flat",),
-                    Text(model.flatNumber),
-                  ]
-              ),
-              TableRow(
-                  children: [
-                    KeyText(msg: "City",),
-                    Text(model.city),
-                  ]
-              ),
-              TableRow(
-                  children: [
-                    KeyText(msg: "State / Country",),
-                    Text(model.state),
-                  ]
-              ),
-              TableRow(
-                  children: [
-                    KeyText(msg: "Pin Code",),
-                    Text(model.pincode),
-                  ]
-              ),
-            ],
+            ),
           ),
         ),
         Padding(
           padding: EdgeInsets.all(10),
           child: Center(
-            child: InkWell(
-              onTap: (){
+            child: WideButton(
+              message: 'Confirmed',
+              onPressed:() {
                 confirmParcel(context,getOrderId);
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.pink, Colors.lightGreenAccent],
-                      begin: const FractionalOffset(0, 0),
-                      end: FractionalOffset(1, 0),
-                      stops: [0, 1],
-                      tileMode: TileMode.clamp,
-                    )),
-                width: MediaQuery.of(context).size.width - 40,
-                height: 50,
-                child: Center(
-                  child: Text('Confirmed',style: TextStyle(color: Colors.white,fontSize: 15),),
-                ),
-              ),
+              } ,
             ),
           ),
         ),

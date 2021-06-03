@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'login.dart';
 import 'register.dart';
 // import 'package:commerce/Config/config.dart';
 
 class AuthenticScreen extends StatefulWidget {
+  static const routeName = 'AuthenticScreen';
+
   @override
   _AuthenticScreenState createState() => _AuthenticScreenState();
 }
@@ -16,18 +19,12 @@ class _AuthenticScreenState extends State<AuthenticScreen> {
         child: Scaffold(
           appBar: AppBar(
             flexibleSpace: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                colors: [Colors.pink, Colors.lightGreenAccent],
-                begin: const FractionalOffset(0, 0),
-                end: FractionalOffset(1, 0),
-                stops: [0, 1],
-                tileMode: TileMode.clamp,
-              )),
+              color: Colors.blue[900],
             ),
             title: Text(
               'E-Shopping',
-              style: TextStyle(color: Colors.white, fontSize: 40),
+              style: GoogleFonts.satisfy(
+                  textStyle: TextStyle(color: Colors.white, fontSize: 40)),
             ),
             centerTitle: true,
             bottom: TabBar(
@@ -51,20 +48,11 @@ class _AuthenticScreenState extends State<AuthenticScreen> {
               indicatorWeight: 5,
             ),
           ),
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.pink, Colors.lightGreenAccent],
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-              ),
-            ),
-            child: TabBarView(
-              children: <Widget>[
-                Login(),
-                Register(),
-              ],
-            ),
+          body: TabBarView(
+            children: <Widget>[
+              Login(),
+              Register(),
+            ],
           ),
         ));
   }

@@ -1,4 +1,4 @@
-import 'package:commerce/Widgets/myDrawer.dart';
+
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -6,18 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import 'customAppBar.dart';
+
 class ThemesScreen extends StatelessWidget {
   static const routeName = '/themes_screen';
 
 
   Widget buildRadioListTile(
-      ThemeMode themeVal, String txt, IconData icon, BuildContext ctx) {
+      ThemeMode themeMode, String txt, IconData icon, BuildContext ctx) {
     return RadioListTile(
       secondary: Icon(
         icon,
         color: Theme.of(ctx).buttonColor,
       ),
-      value: themeVal,
+      value: themeMode,
       groupValue: Provider.of<ThemeProvider>(ctx, listen: true).tm,
       onChanged: (newThemeValue) =>
           Provider.of<ThemeProvider>(ctx, listen: false)
@@ -28,27 +30,27 @@ class ThemesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var themeMode = Provider.of<ThemeProvider>(context).tm ;
     return  Scaffold(
-        drawer:  MyDrawer(),
         appBar:  AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.lightGreenAccent],
-                  begin: const FractionalOffset(0, 0),
-                  end: FractionalOffset(1, 0),
-                  stops: [0, 1],
-                  tileMode: TileMode.clamp,
-                )),
+          elevation: 0,
+          backgroundColor: themeMode == ThemeMode.dark
+              ? Theme.of(context).canvasColor
+              : Colors.white,
+          iconTheme: IconThemeData(
+            color:
+            themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
           ),
           title: Text(
             'Settings',
             style: GoogleFonts.satisfy(
-                textStyle: TextStyle(color: Colors.white, fontSize: 40)
-            ),
+                textStyle: TextStyle(
+                    color: themeMode == ThemeMode.dark
+                        ? Colors.white
+                        : Colors.blue[900],
+                    fontSize: 37)),
           ),
           centerTitle: true,
-
         ),
         body: Column(
           children: [
@@ -59,7 +61,12 @@ class ThemesScreen extends StatelessWidget {
                     padding: EdgeInsets.all(20),
                     child: Text(
                       'Choose your Theme MODE',textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headline6,
+                      style: TextStyle(
+                          color: themeMode == ThemeMode.dark
+                              ? Colors.white
+                              : Colors.blue[900],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
                     ),
                   ),
                   buildRadioListTile(ThemeMode.system,

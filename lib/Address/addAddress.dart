@@ -2,10 +2,11 @@ import 'package:commerce/Config/config.dart';
 import 'package:commerce/Store/storehome.dart';
 
 import 'package:commerce/Models/address.dart';
-import 'package:commerce/Widgets/myDrawer.dart';
+import 'package:commerce/Widgets/customAppBar.dart';
+import 'package:commerce/Widgets/main_Drawer.dart';
 import 'package:commerce/providers/theme_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class AddAddress extends StatelessWidget {
@@ -20,29 +21,11 @@ class AddAddress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var themeMode = Provider.of<ThemeProvider>(context).tm ;
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.lightGreenAccent],
-                  begin: const FractionalOffset(0, 0),
-                  end: FractionalOffset(1, 0),
-                  stops: [0, 1],
-                  tileMode: TileMode.clamp,
-                )),
-          ),
-          title: Text(
-            'Address',
-            style: GoogleFonts.satisfy(
-          textStyle: TextStyle(color: Colors.white, fontSize: 40)
-        ),
-          ),
-          centerTitle: true,
-
-        ),
+        appBar: customAppBar(themeMode, context, "Address"),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             if (formKey.currentState.validate()) {
@@ -73,9 +56,9 @@ class AddAddress extends StatelessWidget {
               Navigator.pushReplacement(context, route);
             }
           },
-          label: Text('Done'),
-          backgroundColor: Color.fromRGBO(255, 105, 150, 1),
-          icon: Icon(Icons.check),
+          label: Text('Done',style: TextStyle(color: themeMode == ThemeMode.dark ? Colors.black87 : Colors.white),),
+          backgroundColor:  themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
+          icon: Icon(Icons.check,color: themeMode == ThemeMode.dark ? Colors.black87 : Colors.white,),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -86,7 +69,8 @@ class AddAddress extends StatelessWidget {
                   padding: EdgeInsets.all(8),
                   child: Center(
                     child: Text('Add new Address',
-                        style: Theme.of(context).textTheme.headline6),
+                        style: TextStyle(
+                            color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],fontSize: 18),),
                   ),
                 ),
               ),
@@ -134,23 +118,34 @@ class MyTextField extends StatelessWidget {
   final String hint;
   final TextEditingController controller;
 
-  MyTextField({Key key, this.hint, this.controller});
+  MyTextField({ this.hint, this.controller});
 
   @override
   Widget build(BuildContext context) {
-    var tm = Provider.of<ThemeProvider>(context).tm;
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
     return Card(
-      color: Color.fromRGBO(255, 254, 230, 0.5),
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: TextFormField(
-          controller: controller,
-          decoration: InputDecoration.collapsed(
-            hintText: hint,
-            hintStyle: TextStyle(
-                color: tm == ThemeMode.dark ? Colors.white : Colors.black),
+      semanticContainer: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
+      child: Container(
+        margin: EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: themeMode == ThemeMode.dark
+              ? Theme.of(context).canvasColor
+              : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: TextFormField(
+            controller: controller,
+            decoration: InputDecoration.collapsed(
+              hintText: hint,
+              hintStyle: TextStyle(
+                  color: themeMode == ThemeMode.dark ? Colors.white : Colors.black),
+            ),
+            validator: (value) => value.isEmpty ? "Field can not be empty" : null,
           ),
-          validator: (value) => value.isEmpty ? "Field can not be empty" : null,
         ),
       ),
     );

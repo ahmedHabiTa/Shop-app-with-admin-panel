@@ -1,31 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:commerce/Admin/uploadItems.dart';
+import 'package:commerce/Admin/admin_home_screen.dart';
 import 'package:commerce/Authentication/authenication.dart';
 import 'package:commerce/Widgets/customTextField.dart';
 import 'package:commerce/DialogBox/errorDialog.dart';
+import 'package:commerce/Widgets/wideButton.dart';
+import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AdminSignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.pink, Colors.lightGreenAccent],
-                begin: const FractionalOffset(0, 0),
-                end: FractionalOffset(1, 0),
-                stops: [0, 1],
-                tileMode: TileMode.clamp,
-              )),
-        ),
-        title: Text(
-          'E-Shopping',
-          style: TextStyle(color: Colors.white, fontSize: 35),
-        ),
-        centerTitle: true,
-      ),
       body: AdminSignInScreen(),
     );
   }
@@ -39,100 +25,122 @@ class AdminSignInScreen extends StatefulWidget {
 class _AdminSignInScreenState extends State<AdminSignInScreen> {
   final TextEditingController _adminIDController = new TextEditingController();
   final TextEditingController _passwordController = new TextEditingController();
-  final GlobalKey<FormState> _formKey =GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    double _screenWidth = MediaQuery.of(context).size.width;
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
     return SingleChildScrollView(
       child: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.pink, Colors.lightGreenAccent],
-              begin: const FractionalOffset(0, 0),
-              end: FractionalOffset(1, 0),
-              stops: [0, 1],
-              tileMode: TileMode.clamp,
-            )),
+        color: themeMode == ThemeMode.dark ? Theme.of(context).canvasColor : Colors.white,
+        height: MediaQuery.of(context).size.height,
         child: Column(
-          mainAxisSize: MainAxisSize.max,
+          //mainAxisSize: MainAxisSize.max,
           children: <Widget>[
+            SizedBox(
+              height: 20,
+            ),
             Container(
               alignment: Alignment.bottomCenter,
-              child: Image.asset('assets/images/admin.png'),
-              height: 240,
-              width: 240,
+              child: Image.asset(
+                'assets/images/admin.png',
+                fit: BoxFit.cover,
+              ),
+              height: 280,
+              width: double.infinity,
+            ),
+            SizedBox(
+              height: 10,
             ),
             Padding(
               padding: EdgeInsets.all(8),
-              child: Text('Admin',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+              child: Text('Login to manage your business',
+                  style: TextStyle(
+                    color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
+                    fontSize: 20,
+                  )),
             ),
             Form(
               key: _formKey,
               child: Column(
                 children: <Widget>[
                   CustomTextField(
-                    controller: _adminIDController ,
+                    controller: _adminIDController,
                     data: Icons.person,
                     hintText: 'Admin ID ',
-                    isObsecure: false ,
+                    isObsecure: false,
                   ),
                   CustomTextField(
-                    controller: _passwordController ,
+                    controller: _passwordController,
                     data: Icons.lock,
                     hintText: 'Password',
-                    isObsecure: true ,
+                    isObsecure: true,
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 25,),
-            // ignore: deprecated_member_use
-            RaisedButton(
-              onPressed: (){
-                _adminIDController.text.isNotEmpty &&_passwordController.text.isNotEmpty ?
-                loginAdmin()
-                    : showDialog(context: context,builder: (c){
-                  return ErrorAlertDialog(message: 'Please Enter your Email and Password',);
-                });
+            SizedBox(
+              height: 10,
+            ),
+            WideButton(
+              message: 'Login',
+              onPressed: () {
+                _adminIDController.text.isNotEmpty &&
+                        _passwordController.text.isNotEmpty
+                    ? loginAdmin()
+                    : showDialog(
+                        context: context,
+                        builder: (c) {
+                          return ErrorAlertDialog(
+                            message: 'Enter your ID and Password',
+                          );
+                        });
               },
-              color: Colors.pink,
-              child: Text('Login',style: TextStyle(color: Colors.white),),
             ),
-            SizedBox(height: 50,),
-            Container(
-              height: 4,
-              width: _screenWidth * 0.8,
-              color: Colors.pink,
+            SizedBox(
+              height: 10,
             ),
-            SizedBox(height: 20,),
-            // ignore: deprecated_member_use
-            FlatButton.icon(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>AuthenticScreen())),
-                icon: Icon(Icons.nature_people,color: Colors.pink,),
-                label: Text('if not Admin,Please return to the login Page !',style: TextStyle(color: Colors.pink,fontWeight: FontWeight.bold),)),
-            SizedBox(height: 20,),
+            FlatButton.icon(
+                onPressed: () => Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => AuthenticScreen())),
+                icon: Icon(
+                  Icons.nature_people,
+                  color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
+                ),
+                label: Text(
+                  'Return to the login Page',
+                  style: TextStyle(
+                      color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900], fontWeight: FontWeight.bold),
+                )),
           ],
         ),
       ),
     );
   }
-  loginAdmin(){
-    FirebaseFirestore.instance.collection('admins').get().then((snapshot){
-      snapshot.docs.forEach((result){
-        if(result['id'] != _adminIDController.text.trim()){
-            // ignore: deprecated_member_use
-            Scaffold.of(context).showSnackBar(SnackBar(content: Text('Invalid ID'),));
-        }
-        else if(result['password'] != _passwordController.text.trim()){
+
+  loginAdmin() {
+    FirebaseFirestore.instance.collection('admins').get().then((snapshot) {
+      snapshot.docs.forEach((result) {
+        if (result['id'] != _adminIDController.text.trim()) {
           // ignore: deprecated_member_use
-          Scaffold.of(context).showSnackBar(SnackBar(content: Text('Invalid Password'),));
-        }else{
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text('Invalid ID'),
+          ));
+        } else if (result['password'] != _passwordController.text.trim()) {
           // ignore: deprecated_member_use
-          Scaffold.of(context).showSnackBar(SnackBar(content: Text('Welcome dear Admin,'+result['name']),));
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text('Invalid Password'),
+          ));
+        } else {
+          // ignore: deprecated_member_use
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text('Welcome dear Admin,' + result['name']),
+          ));
           setState(() {
             _adminIDController.text = '';
             _passwordController.text = '';
           });
-          Route route = MaterialPageRoute(builder: (c)=>UploadPage());
+          Route route = MaterialPageRoute(builder: (c) => UploadPage());
           Navigator.pushReplacement(context, route);
         }
       });

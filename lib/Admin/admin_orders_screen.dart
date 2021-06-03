@@ -1,51 +1,47 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:commerce/Store/storehome.dart';
-import 'package:commerce/Widgets/myDrawer.dart';
-import 'package:flutter/material.dart';
+import 'package:commerce/Admin/adminOrderCard.dart';
 import 'package:commerce/Config/config.dart';
+import 'package:commerce/providers/theme_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-
-
-
+import 'package:provider/provider.dart';
 import '../Widgets/loadingWidget.dart';
-import '../Widgets/orderCard.dart';
 
-class MyOrders extends StatefulWidget {
+
+class AdminOrdersScreen extends StatefulWidget {
   @override
   _MyOrdersState createState() => _MyOrdersState();
 }
 
-class _MyOrdersState extends State<MyOrders> {
+
+class _MyOrdersState extends State<AdminOrdersScreen> {
   @override
   Widget build(BuildContext context) {
+    var themeMode = Provider.of<ThemeProvider>(context).tm ;
     return SafeArea(
       child: Scaffold(
-        drawer: MyDrawer(),
         appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.lightGreenAccent],
-                  begin: const FractionalOffset(0, 0),
-                  end: FractionalOffset(1, 0),
-                  stops: [0, 1],
-                  tileMode: TileMode.clamp,
-                )),
+          elevation: 0,
+          backgroundColor: themeMode == ThemeMode.dark
+              ? Theme.of(context).canvasColor
+              : Colors.white,
+          iconTheme: IconThemeData(
+            color:
+            themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
           ),
           title: Text(
-            'Orders',
+            'Client\'s Orders',
             style: GoogleFonts.satisfy(
-                textStyle: TextStyle(color: Colors.white, fontSize: 40)
-            ),
+                textStyle: TextStyle(
+                    color: themeMode == ThemeMode.dark
+                        ? Colors.white
+                        : Colors.blue[900],
+                    fontSize: 37)),
           ),
           centerTitle: true,
-
         ),
         body: StreamBuilder<QuerySnapshot>(
-          stream: EcommerceApp.firestore.collection(EcommerceApp.collectionUser)
-          .doc(EcommerceApp.sharedPreferences.getString(EcommerceApp.userUID))
-          .collection(EcommerceApp.collectionOrders).snapshots(),
+          stream: FirebaseFirestore.instance.collection('orders').snapshots(),
           builder: (c,snapshot){
             return snapshot.hasData
                 ? ListView.builder(
@@ -56,10 +52,13 @@ class _MyOrdersState extends State<MyOrders> {
                       .data()[EcommerceApp.productID]).get(),
                   builder: (c,snap){
                     return snap.hasData
-                        ? OrderCard(
+                        ? AdminOrderCard(
                       itemCount: snap.data.docs.length,
                       data: snap.data.docs,
                       orderID: snapshot.data.docs[index].id,
+                      orderBy: snapshot.data.docs[index].data()['orderBy'],
+                      addressID: snapshot.data.docs[index].data()['addressID'],
+                      numberOfOrder: index+1,
                     )
                         : Center(child: circularProgress(),);
                   },

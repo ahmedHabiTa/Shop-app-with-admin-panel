@@ -43,6 +43,9 @@ dependencies:
   firebase_core: ^1.0.3
   flutter_colorpicker: ^0.4.0
   google_fonts: ^2.0.0
+  carousel_slider: ^3.0.0
+
+
 
 
 dev_dependencies:
@@ -66,6 +69,16 @@ flutter:
      - assets/images/cash.png
      - assets/images/login.png
      - assets/images/welcome.png
+     - assets/images/ecommerce.png
+     - assets/slider_images/1615441020ydvqD.item_XXL_51889566_32a329591e022.jpeg
+     - assets/slider_images/1615450256e0bZk.item_XXL_7582156_7501823.jpeg
+     - assets/slider_images/1615451715MqRD4.item_XXL_131956716_5973d6a4ae72f.jpeg
+     - assets/slider_images/1615452417AmlJk.item_XXL_42123558_50e9b1ffa8fe5.jpeg
+     - assets/slider_images/1619472351ITAM5.3bb51c97376281.5ec3ca8c1e8c5.jpg
+     - assets/slider_images/1619875101BSVpU.1.jpg
+     - assets/slider_images/1620253816SgPr3.1.jpg
+     - assets/slider_images/16202548748OGFF.1.jpg
+     - assets/slider_images/1620867082asmxD.1.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -1,12 +1,21 @@
+
+import 'package:commerce/Models/item.dart';
 import 'package:flutter/foundation.dart';
 
 class ItemQuantity with ChangeNotifier {
-  int _numberOfItems = 0;
+  ItemModel itemModel ;
+  int _numberOfItems =1 ;
   int get numberOfItems => _numberOfItems ;
-    display(int no){
+    add(int no){
       _numberOfItems = no ;
+      _numberOfItems++ ;
       notifyListeners();
     }
+  minus(int no){
+    _numberOfItems = no ;
+    _numberOfItems-- ;
+    notifyListeners();
+  }
 
 
 }

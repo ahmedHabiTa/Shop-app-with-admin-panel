@@ -1,18 +1,19 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commerce/Config/config.dart';
-import 'package:commerce/Store/cart.dart';
+import 'package:commerce/Counters/ItemQuantity.dart';
 import 'package:commerce/Store/product_page.dart';
 import 'package:commerce/Counters/cartitemcounter.dart';
+import 'package:commerce/Widgets/customAppBar.dart';
 import 'package:commerce/Widgets/loadingWidget.dart';
 import 'package:commerce/Widgets/searchBox.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../Widgets/myDrawer.dart';
+import '../Widgets/main_Drawer.dart';
 import '../Models/item.dart';
 
 double width;
@@ -23,241 +24,245 @@ class StoreHome extends StatefulWidget {
 }
 
 class _StoreHomeState extends State<StoreHome> {
+  List<String> sliderImages = [
+    'assets/slider_images/1615441020ydvqD.item_XXL_51889566_32a329591e022.jpeg',
+    'assets/slider_images/1615450256e0bZk.item_XXL_7582156_7501823.jpeg',
+    'assets/slider_images/1615451715MqRD4.item_XXL_131956716_5973d6a4ae72f.jpeg',
+    'assets/slider_images/1615452417AmlJk.item_XXL_42123558_50e9b1ffa8fe5.jpeg',
+    'assets/slider_images/1619472351ITAM5.3bb51c97376281.5ec3ca8c1e8c5.jpg',
+    'assets/slider_images/1619875101BSVpU.1.jpg',
+    'assets/slider_images/1620253816SgPr3.1.jpg',
+    'assets/slider_images/16202548748OGFF.1.jpg',
+    'assets/slider_images/1620867082asmxD.1.jpg',
+  ];
+
   @override
   Widget build(BuildContext context) {
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
     width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-              colors: [Colors.pink, Colors.lightGreenAccent],
-              begin: const FractionalOffset(0, 0),
-              end: FractionalOffset(1, 0),
-              stops: [0, 1],
-              tileMode: TileMode.clamp,
-            )),
-          ),
-          title: Text(
-            'E-Shopping',
-            style: GoogleFonts.satisfy(
-                textStyle: TextStyle(color: Colors.white, fontSize: 40)),
-          ),
-          centerTitle: true,
-          actions: <Widget>[
-            Stack(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.shopping_cart,
-                    color: Colors.pink,
-                  ),
-                  onPressed: () {
-                    Route route = MaterialPageRoute(builder: (c) => CartPage());
-                    Navigator.push(context, route);
-                  },
+          appBar: customAppBar(themeMode, context, 'E-Shopping',
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(60),
+                child: SearchBox(),
+              )),
+          drawer: MyDrawer(),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 10,
                 ),
-                Positioned(
-                  child: Stack(
-                    children: <Widget>[
-                      Icon(
-                        Icons.brightness_1,
-                        size: 20,
-                        color: Colors.green,
-                      ),
-                      Positioned(
-                        top: 3,
-                        bottom: 4,
-                        left: 4,
-                        child: Consumer<CartItemCounter>(
-                          builder: (context, counter, _) {
-                            return Text(
-                              (EcommerceApp.sharedPreferences
-                                          .getStringList(
-                                              EcommerceApp.userCartList)
-                                          .length -
-                                      1)
-                                  .toString(),
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500),
-                            );
-                          },
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    'Best Offers',
+                    style: GoogleFonts.oswald(
+                      textStyle: TextStyle(
+                          color: themeMode == ThemeMode.dark
+                              ? Colors.white
+                              : Colors.blue[900],
+                          fontSize: 27,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ),
+                CarouselSlider(
+                    items: sliderImages.map((i) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Image(
+                          image: AssetImage(i),
+                          fit: BoxFit.fill,
+                          height: 180,
                         ),
-                      ),
-                    ],
+                      );
+                    }).toList(),
+                    options: CarouselOptions(
+                      height: 180,
+                      aspectRatio: 16 / 9,
+                      viewportFraction: 1,
+                      initialPage: 0,
+                      enableInfiniteScroll: true,
+                      reverse: false,
+                      autoPlay: true,
+                      autoPlayInterval: Duration(seconds: 3),
+                      autoPlayAnimationDuration: Duration(milliseconds: 800),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      enlargeCenterPage: true,
+                      scrollDirection: Axis.horizontal,
+                    )),
+                SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    'Products',
+                    style: GoogleFonts.oswald(
+                      textStyle: TextStyle(
+                          color: themeMode == ThemeMode.dark
+                              ? Colors.white
+                              : Colors.blue[900],
+                          fontSize: 27,
+                          fontWeight: FontWeight.w400),
+                    ),
                   ),
                 ),
+                StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("items")
+                        .limit(15)
+                        .orderBy("publishedDate", descending: true)
+                        .snapshots(),
+                    builder: (context, dataSnapshot) {
+                      return !dataSnapshot.hasData
+                          ? Center(
+                              child: circularProgress(),
+                            )
+                          : GridView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              physics: BouncingScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 250,
+                                childAspectRatio: 1 / 1.8,
+                                crossAxisSpacing: 0,
+                                mainAxisSpacing: 0,
+                              ),
+                              itemBuilder: (ctx, index) {
+                                ItemModel model = ItemModel.fromJson(
+                                    dataSnapshot.data.docs[index].data());
+                                return productsInfo(model, ctx);
+                              },
+                              itemCount: dataSnapshot.data.docs.length,
+                            );
+                    }),
               ],
             ),
-          ],
-        ),
-        drawer: MyDrawer(),
-        body: CustomScrollView(
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: SearchBoxDelegate(),
-            ),
-            StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("items")
-                  .limit(15)
-                  .orderBy("publishedDate", descending: true)
-                  .snapshots(),
-              builder: (context, dataSnapshot) {
-                return !dataSnapshot.hasData
-                    ? SliverToBoxAdapter(
-                        child: Center(
-                          child: circularProgress(),
-                        ),
-                      )
-                    : SliverStaggeredGrid.countBuilder(
-                        crossAxisCount: 1,
-                        staggeredTileBuilder: (c) => StaggeredTile.fit(1),
-                        itemBuilder: (context, index) {
-                          ItemModel model = ItemModel.fromJson(
-                              dataSnapshot.data.docs[index].data());
-                          return sourceInfo(model, context);
-                        },
-                        itemCount: dataSnapshot.data.docs.length,
-                      );
-              },
-            ),
-          ],
-        ),
-      ),
+          )),
     );
   }
 }
 
-Widget sourceInfo(ItemModel model, BuildContext context,
+Widget productsInfo(ItemModel itemModel, BuildContext context,
     {Color background, removeCartFunction}) {
-  var mode = Provider.of<ThemeProvider>(context).tm;
+  var themeMode = Provider.of<ThemeProvider>(context).tm;
+
   return Card(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-    color:
-        mode == ThemeMode.dark ? Theme.of(context).canvasColor : Colors.white,
+    semanticContainer: true,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
     child: InkWell(
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: BorderRadius.circular(20),
       onTap: () {
         Route route = MaterialPageRoute(
             builder: (c) => ProductPage(
-                  itemModel: model,
+                  itemModel: itemModel,
                 ));
-        Navigator.pushReplacement(context, route);
+        Navigator.push(context, route);
       },
-      splashColor: Colors.pink,
+      splashColor: Colors.white,
       child: Padding(
-        padding: EdgeInsets.all(6),
+        padding: EdgeInsets.all(1),
         child: Container(
-          height: 180,
-          width: width,
-          child: Row(
-            children: <Widget>[
-              Image.network(
-                model.thumbnailUrl,
-                width: 140,
-                height: 160,
+          decoration: BoxDecoration(
+            color: themeMode == ThemeMode.dark
+                ? Theme.of(context).canvasColor
+                : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 5,
+              ),
+              Center(
+                child: Stack(
+                  alignment: AlignmentDirectional.bottomStart,
+                  children: [
+                    Image.network(
+                      itemModel.thumbnailUrl,
+                      width: 150,
+                      height: 160,
+                      fit: BoxFit.contain,
+                    ),
+                    if(itemModel.discount != 0)
+                    Container(
+                      height: 15,
+                      color: Colors.red,
+                      child: Text('Discount',style: TextStyle(color: Colors.white),),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 4,
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        model.title,
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        model.shortInfo,
-                        style: TextStyle(
-                            color: mode == ThemeMode.dark
-                                ? Colors.white
-                                : Colors.black87,
-                            fontSize: 12),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.pink[300],
-                            ),
-                            height: 50,
-                            width: 40,
-                            alignment: Alignment.topLeft,
-                            child: Center(
-                              child: Text(
-                                '\$ ${(model.price + model.price).toString()}',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    decoration: TextDecoration.lineThrough),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.pink,
-                            ),
-                            height: 50,
-                            width: 40,
-                            alignment: Alignment.topLeft,
-                            child: Center(
-                              child: Text(
-                                '\$ ${(model.price).toString()}',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 14),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                        ],
-                      ),
-                      Align(
-                          alignment: Alignment.bottomRight,
-                          child: removeCartFunction == null
-                              ? IconButton(
-                            icon: Icon(
-                              Icons.add_shopping_cart,
-                              color: Colors.pinkAccent,
-                              size: 30,
-                            ),
-                            onPressed: () {
-                              checkItemInCart(model.shortInfo, context);
-                            },
-                          )
-                              : IconButton(
-                            icon: Icon(
-                              Icons.delete,
-                              color: Colors.pinkAccent,
-                            ),
-                            onPressed: () {
-                              removeCartFunction();
-                            },
-                          )),
-                    ],
-                  ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, top: 5),
+                child: Text(
+                  itemModel.title,
+                  style: Theme.of(context).textTheme.headline4,
+                  maxLines: 2,
                 ),
               ),
+              SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 10,
+                  ),
+                  cardPrice(Text('${(itemModel.price).toString()} EGP',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ), Colors.blue[900]),
+                  if(itemModel.discount != 0)
+                  cardPrice(Text(
+                        '${(itemModel.oldPrice).toString()} EGP',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor: Colors.black87),
+                      ), Colors.blue[300]),
+                ],
+              ),
+              Align(
+                  alignment: Alignment.bottomRight,
+                  child: removeCartFunction == null
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.add_shopping_cart,
+                            color: themeMode == ThemeMode.dark
+                                ? Colors.white
+                                : Colors.blue[900],
+                            size: 25,
+                          ),
+                          onPressed: () {
+                            checkItemInCart(itemModel.shortInfo, context);
+                          },
+                        )
+                      : IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            color: themeMode == ThemeMode.dark
+                                ? Colors.white
+                                : Colors.blue[900],
+                          ),
+                          onPressed: () {
+                            removeCartFunction();
+                          },
+                        )),
             ],
           ),
         ),
@@ -266,30 +271,6 @@ Widget sourceInfo(ItemModel model, BuildContext context,
   );
 }
 
-// Widget card({Color primaryColor = Colors.redAccent, String imgPath}) {
-//   return Container(
-//     height: 150,
-//     width: width * 0.34,
-//     margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//     decoration: BoxDecoration(
-//         color: primaryColor,
-//         borderRadius: BorderRadius.all(Radius.circular(20)),
-//         boxShadow: <BoxShadow>[
-//           BoxShadow(
-//               offset: Offset(0, 5), blurRadius: 10, color: Colors.grey[200]),
-//         ]),
-//     child: ClipRRect(
-//       borderRadius: BorderRadius.all(Radius.circular(20)),
-//       child: Image.network(
-//         imgPath,
-//         height: 150,
-//         width: width * 0.34,
-//         fit: BoxFit.fill,
-//       ),
-//     ),
-//   );
-// }
-
 void checkItemInCart(String productID, BuildContext context) {
   EcommerceApp.sharedPreferences
           .getStringList(EcommerceApp.userCartList)
@@ -297,4 +278,17 @@ void checkItemInCart(String productID, BuildContext context) {
       ? Fluttertoast.showToast(msg: 'Item Already in Cart')
       : Provider.of<CartItemCounter>(context, listen: false)
           .addItemToCart(productID, context);
+}
+
+Widget cardPrice(Widget child, Color color) {
+  return Container(
+    decoration: BoxDecoration(
+      shape: BoxShape.rectangle,
+      color: color,
+    ),
+    height: 25,
+    width: 80,
+    alignment: Alignment.topLeft,
+    child: Center(child: child),
+  );
 }

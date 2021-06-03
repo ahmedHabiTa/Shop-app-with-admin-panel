@@ -12,14 +12,14 @@ class ErrorAlertDialog extends StatelessWidget
   {
     return AlertDialog(
       key: key,
-      content: Text(message),
+      content: Text(message,style: TextStyle(color: Colors.black87),),
       actions: <Widget>[
         // ignore: deprecated_member_use
         RaisedButton(onPressed: ()
         {
           Navigator.pop(context);
         },
-          color: Colors.red,
+          color: Colors.blue[900],
           child: Center(
             child: Text("OK"),
           ),

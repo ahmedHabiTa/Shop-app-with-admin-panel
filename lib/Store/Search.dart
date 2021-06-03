@@ -1,10 +1,12 @@
 import 'package:commerce/Models/item.dart';
 import 'package:commerce/Store/storehome.dart';
-import 'package:commerce/Widgets/myDrawer.dart';
+import 'package:commerce/Widgets/main_Drawer.dart';
+import 'package:commerce/providers/theme_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../Widgets/customAppBar.dart';
 
 class SearchProduct extends StatefulWidget {
@@ -17,15 +19,15 @@ class _SearchProductState extends State<SearchProduct> {
 
   @override
   Widget build(BuildContext context) {
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
+
     return SafeArea(
       child: Scaffold(
         drawer: MyDrawer(),
-        appBar: MyAppBar(
-          bottom: PreferredSize(
-            child: searchWidget(),
-            preferredSize: Size(56, 56),
-          ),
-        ),
+        appBar: customAppBar(themeMode, context, 'Search',bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60),
+          child: searchBar(),
+        )),
         body: FutureBuilder<QuerySnapshot>(
           future: docList,
           builder: (context, snap) {
@@ -35,7 +37,7 @@ class _SearchProductState extends State<SearchProduct> {
               itemBuilder: (context, index) {
                 ItemModel model =
                 ItemModel.fromJson(snap.data.docs[index].data());
-                return sourceInfo(model, context);
+                return productsInfo(model, context);
               },
             )
                 : Center(
@@ -53,60 +55,55 @@ class _SearchProductState extends State<SearchProduct> {
       ),
     );
   }
-
-  Widget searchWidget() {
-    return Container(
-      alignment: Alignment.center,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: 80,
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.pink, Colors.lightGreenAccent],
-            begin: const FractionalOffset(0, 0),
-            end: FractionalOffset(1, 0),
-            stops: [0, 1],
-            tileMode: TileMode.clamp,
-          )),
+Widget searchBar(){
+  var mode = Provider.of<ThemeProvider>(context).tm;
+    return Card(
+      margin: EdgeInsets.only(right: 10, left: 10),
+      color: mode == ThemeMode.dark ? Colors.white : Colors.black87,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width - 40,
+        margin: EdgeInsets.all(1),
+        width: MediaQuery.of(context).size.width,
         height: 50,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(6),
+          color: mode == ThemeMode.dark
+              ? Theme.of(context).canvasColor
+              : Colors.white,
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 8),
-              child: Icon(
-                Icons.search,
-                color: Colors.blueGrey,
-              ),
-            ),
             Flexible(
               child: Padding(
-                padding: EdgeInsets.only(left: 8),
+                padding: EdgeInsets.only(left: 18),
                 child: TextField(
                   onChanged: (value) {
                     startSearching(value);
                   },
-                  decoration: InputDecoration.collapsed(hintText: 'Search....',hintStyle: GoogleFonts.aBeeZee(
-                    textStyle: TextStyle(color: Colors.black)
+                  decoration: InputDecoration.collapsed(hintText: 'Search...',hintStyle: GoogleFonts.aBeeZee(
+                      textStyle: TextStyle(
+                          color: mode == ThemeMode.dark
+                              ? Colors.white
+                              : Colors.blue[900],
+                          fontSize: 17)
                   )),
                 ),
+              ),
+            ),
+            Spacer(),
+            Padding(
+              padding: EdgeInsets.only(right: 12),
+              child: Icon(
+                Icons.search,
+                color:
+                mode == ThemeMode.dark ? Colors.white : Colors.blue[900],
               ),
             ),
           ],
         ),
       ),
     );
-  }
+}
 
   Future startSearching(String query) async {
     docList = FirebaseFirestore.instance

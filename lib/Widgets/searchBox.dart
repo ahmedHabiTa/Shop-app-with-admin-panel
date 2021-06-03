@@ -1,69 +1,62 @@
-import 'package:flutter/cupertino.dart';
+import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../Store/Search.dart';
 
-
-class SearchBoxDelegate extends SliverPersistentHeaderDelegate {
+class SearchBox extends StatelessWidget {
   @override
-  Widget build(
-      BuildContext context,
-      double shrinkOffset,
-      bool overlapsContent
-      ) =>
-      InkWell(
-        onTap: (){
-          Route route = MaterialPageRoute(builder: (c)=>SearchProduct());
+  Widget build(BuildContext context) {
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
+    return Card(
+      margin: EdgeInsets.only(right: 10, left: 10),
+      color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: InkWell(
+       borderRadius: BorderRadius.circular(20),
+        onTap: () {
+          Route route = MaterialPageRoute(builder: (c) => SearchProduct());
           Navigator.pushReplacement(context, route);
         },
         child: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.pink, Colors.lightGreenAccent],
-                begin: const FractionalOffset(0, 0),
-                end: FractionalOffset(1, 0),
-                stops: [0, 1],
-                tileMode: TileMode.clamp,
-              )),
-          alignment: Alignment.center,
+          margin: EdgeInsets.all(1),
           width: MediaQuery.of(context).size.width,
-          height: 80,
-          child: InkWell(
-            child: Container(
-              margin: EdgeInsets.only(left: 10,right: 10),
-              width: MediaQuery.of(context).size.width,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
+          height: 50,
+          decoration: BoxDecoration(
+            color: themeMode == ThemeMode.dark
+                ? Theme.of(context).canvasColor
+                : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                width: 10,
               ),
-              child: Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 8),
-                    child: Icon(Icons.search,color: Colors.blueGrey,),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 8),
-                    child: Text('Search'),
-                  )
-                ],
+              Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: Text(
+                  'Search...',
+                  style: TextStyle(
+                      color: themeMode == ThemeMode.dark
+                          ? Colors.white
+                          : Colors.blue[900],
+                      fontSize: 17),
+                ),
               ),
-            ),
+              Spacer(),
+              Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: Icon(
+                  Icons.search,
+                  color:
+                  themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
+                ),
+              ),
+            ],
           ),
         ),
-      );
-
-
-
-  @override
-  double get maxExtent => 80;
-
-  @override
-  double get minExtent => 80;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
+      ),
+    );
+  }
 }
-
-
