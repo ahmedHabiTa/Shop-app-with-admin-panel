@@ -8,6 +8,7 @@ class CustomTextField extends StatelessWidget {
   final IconData data;
   final String hintText;
   bool isObsecure = true;
+
 final String labelText ;
   CustomTextField(
       {Key key, this.controller, this.data, this.hintText, this.isObsecure,this.labelText})

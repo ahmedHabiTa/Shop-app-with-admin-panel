@@ -1,7 +1,8 @@
+import 'package:commerce/Config/config.dart';
 import 'package:commerce/Store/product_detailed_description.dart';
 import 'package:commerce/Store/storehome.dart';
 import 'package:commerce/Widgets/customAppBar.dart';
-import 'package:commerce/Widgets/main_Drawer.dart';
+import 'package:commerce/Widgets/main_drawer.dart';
 import 'package:commerce/Models/item.dart';
 import 'package:commerce/Widgets/wideButton.dart';
 import 'package:commerce/providers/theme_provider.dart';
@@ -18,6 +19,7 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
+  int numberOfProducts = 0 ;
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
@@ -25,7 +27,7 @@ class _ProductPageState extends State<ProductPage> {
       child: Scaffold(
         floatingActionButton: WideButton(
           message: "Add to Cart",
-          onPressed: () => checkItemInCart(widget.itemModel.shortInfo, context),
+          onPressed: () => checkItemInCart(widget.itemModel,widget.itemModel.shortInfo, context),
         ),
         appBar: customAppBar(themeMode, context, ''),
         //drawer: MyDrawer(),
@@ -103,8 +105,12 @@ class _ProductPageState extends State<ProductPage> {
                                    // ignore: unnecessary_statements
                                    (){};
                                  }else{
+                                   widget.itemModel.numberOfItem -- ;
+                                   EcommerceApp.firestore.collection('items').doc(widget.itemModel.shortInfo).update({
+                                     'numberOfItem' : widget.itemModel.numberOfItem ,
+                                   });
                                    setState(() {
-                                     widget.itemModel.numberOfItem--;
+                                     widget.itemModel.numberOfItem = widget.itemModel.numberOfItem ;
                                    });
                                  }
                                 },
@@ -122,9 +128,13 @@ class _ProductPageState extends State<ProductPage> {
                                           ? Colors.white
                                           : Colors.black87),
                                   onPressed: () {
-                                    setState(() {
-                                      widget.itemModel.numberOfItem++;
-                                    });
+                                    widget.itemModel.numberOfItem ++ ;
+                                   EcommerceApp.firestore.collection('items').doc(widget.itemModel.shortInfo).update({
+                                     'numberOfItem' : widget.itemModel.numberOfItem ,
+                                   });
+                                   setState(() {
+                                     widget.itemModel.numberOfItem = widget.itemModel.numberOfItem ;
+                                   });
                                   }),
                             ],
                           ),

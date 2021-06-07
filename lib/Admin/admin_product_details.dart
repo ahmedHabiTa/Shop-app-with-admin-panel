@@ -5,6 +5,7 @@ import 'package:commerce/Store/product_detailed_description.dart';
 import 'package:commerce/Widgets/customAppBar.dart';
 import 'package:commerce/Models/item.dart';
 import 'package:commerce/Widgets/customTextField.dart';
+import 'package:commerce/Widgets/loadingWidget.dart';
 import 'package:commerce/Widgets/wideButton.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class AdminProductDetails extends StatefulWidget {
 
 class _AdminProductDetailsState extends State<AdminProductDetails> {
 
-
+bool uploading = false ;
   @override
   Widget build(BuildContext context) {
 
@@ -31,13 +32,11 @@ class _AdminProductDetailsState extends State<AdminProductDetails> {
      TextEditingController _priceController =  TextEditingController();
      TextEditingController _discountController =  TextEditingController();
      TextEditingController _oldPriceController =  TextEditingController();
-     TextEditingController _shortInfoController =  TextEditingController();
      TextEditingController _titleController =  TextEditingController();
     var themeMode = Provider.of<ThemeProvider>(context).tm;
     _priceController.text = widget.itemModel.price.toString();
     _discountController.text = widget.itemModel.discount.toString();
     _oldPriceController.text = widget.itemModel.oldPrice.toString();
-    _shortInfoController.text = widget.itemModel.shortInfo;
     _titleController.text = widget.itemModel.title;
     return SafeArea(
       child: Scaffold(
@@ -74,11 +73,6 @@ class _AdminProductDetailsState extends State<AdminProductDetails> {
                   controller: _discountController,
                 ),
                 CustomTextField(
-                  hintText: 'Short Info :',
-                  isObsecure: false,
-                  controller: _shortInfoController,
-                ),
-                CustomTextField(
                   hintText: 'Title :',
                   isObsecure: false,
                   controller: _titleController,
@@ -86,17 +80,17 @@ class _AdminProductDetailsState extends State<AdminProductDetails> {
                 SizedBox(
                   height: 10,
                 ),
-                Center(
+                uploading ? linearProgress() : Center(
                   child: WideButton(
                     message: 'Update',
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         updateProduct(
-                           int.parse(_priceController.text),
+                          int.parse(_priceController.text),
                           int.parse(_oldPriceController.text),
-                           int.parse(_discountController.text),
-                           _shortInfoController.text,
-                           _titleController.text,
+                          int.parse(_discountController.text),
+                          widget.itemModel.shortInfo,
+                          _titleController.text,
                         );
                       }
                     },
@@ -110,6 +104,9 @@ class _AdminProductDetailsState extends State<AdminProductDetails> {
     );
   }
   updateProduct(int price, int oldPrice, int discount, String shortInfo, String title)async{
+    setState(() {
+      uploading = true ;
+    });
    return await EcommerceApp.firestore.collection('items').doc(shortInfo).update({
      "price" : price,
      "old_price" : oldPrice,
@@ -118,6 +115,9 @@ class _AdminProductDetailsState extends State<AdminProductDetails> {
      "title" : title,
    }).then((value) {
      Fluttertoast.showToast(msg: 'Updated');
+     setState(() {
+       uploading = false ;
+     });
    });
 
   }

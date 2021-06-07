@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ItemModel {
+
   String title;
   String shortInfo;
   Timestamp publishedDate;
@@ -11,6 +12,7 @@ class ItemModel {
   int oldPrice;
   int discount;
   int numberOfItem  ;
+  bool productInCart ;
 
   ItemModel(
       {this.title,
@@ -21,7 +23,9 @@ class ItemModel {
         this.status,
         this.numberOfItem,
         this.oldPrice,
-        this.discount
+        this.discount,
+        this.productInCart,
+        this.price
         });
 
   ItemModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,7 @@ class ItemModel {
     numberOfItem = json['numberOfItem'];
     oldPrice = json['old_price'];
     discount = json['discount'];
+    productInCart = json['productInCart'];
   }
 
   Map<String, dynamic> toJson() {
@@ -51,6 +56,7 @@ class ItemModel {
     data['numberOfItem'] =numberOfItem ;
     data['old_price'] =oldPrice ;
     data['discount'] =discount ;
+    data['productInCart'] =productInCart ;
     return data;
   }
 }

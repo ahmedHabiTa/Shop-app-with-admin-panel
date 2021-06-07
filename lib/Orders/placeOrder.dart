@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commerce/Config/config.dart';
+import 'package:commerce/Models/item.dart';
 import 'package:commerce/Store/storehome.dart';
 import 'package:commerce/Counters/cartitemcounter.dart';
 import 'package:flutter/cupertino.dart';
@@ -81,8 +82,7 @@ class _PaymentPageState extends State<PaymentPage> {
       emptyCartNow();
     });
   }
-
-  emptyCartNow() {
+  emptyCartNow(){
     EcommerceApp.sharedPreferences
         .setStringList(EcommerceApp.userCartList, ["garbageValue"]);
     List tempList =
@@ -98,7 +98,7 @@ class _PaymentPageState extends State<PaymentPage> {
       Provider.of<CartItemCounter>(context, listen: false).displayResult();
       Fluttertoast.showToast(msg: 'your Order has been Placed, successfully');
       Route route = MaterialPageRoute(builder: (c) => StoreHome());
-      Navigator.push(context, route);
+      Navigator.pushReplacement(context, route);
     });
   }
 

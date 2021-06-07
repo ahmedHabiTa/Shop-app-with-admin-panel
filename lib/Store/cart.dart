@@ -1,14 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commerce/Config/config.dart';
 import 'package:commerce/Address/check_out_address.dart';
-import 'package:commerce/Counters/ItemQuantity.dart';
-import 'package:commerce/Widgets/customAppBar.dart';
 import 'package:commerce/Widgets/loadingWidget.dart';
 import 'package:commerce/Models/item.dart';
 import 'package:commerce/Counters/cartitemcounter.dart';
 import 'package:commerce/Counters/totalMoney.dart';
-
-import 'package:commerce/Widgets/main_Drawer.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,14 +21,14 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
 
 
-  double totalAmount;
+ // double totalAmount;
 
-  @override
-  void initState() {
-    super.initState();
-    totalAmount = 0;
-    Provider.of<TotalAmount>(context, listen: false).display(0.0);
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   //Provider.of<TotalAmount>(context).totalAmount = 0;
+  //   Provider.of<TotalAmount>(context, listen: false).display(0);
+  // }
 
 
 
@@ -40,7 +36,7 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
-    int numberOfItems = Provider.of<ItemQuantity>(context).numberOfItems ;
+    var totalAmount =  Provider.of<TotalAmount>(context, listen: false).totalAmount ;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -52,7 +48,7 @@ class _CartPageState extends State<CartPage> {
           } else {
             Route route = MaterialPageRoute(
                 builder: (c) => Address(
-                      totalAmount: totalAmount,
+                      totalAmount:  totalAmount,
                     ));
             Navigator.push(context, route);
           }
@@ -138,11 +134,11 @@ class _CartPageState extends State<CartPage> {
           SliverToBoxAdapter(
             child: Consumer<TotalAmount>(
               builder: (context, amountProvider, cartProvider) {
-                return Padding(
+                return  Padding(
                   padding: EdgeInsets.all(8),
                   child: Center(
                     child: Text(
-                      'Total Price: ${amountProvider.totalAmount} EGP',
+                      'Total Price: $totalAmount EGP',
                       style: TextStyle(
                           color: themeMode == ThemeMode.dark
                               ? Colors.white
@@ -178,9 +174,9 @@ class _CartPageState extends State<CartPage> {
                                   snapshot.data.docs[index].data());
                               if (index == 0) {
                                 totalAmount = 0;
-                                totalAmount = model.price + totalAmount;
+                                totalAmount = model.price*model.numberOfItem + totalAmount;
                               } else {
-                                totalAmount = model.price + totalAmount;
+                                totalAmount = model.price*model.numberOfItem + totalAmount;
                               }
                               if (snapshot.data.docs.length-1  == index) {
                                 Provider.of<TotalAmount>(context,
@@ -189,34 +185,103 @@ class _CartPageState extends State<CartPage> {
                               }
                               return productsInfo(model, context,
                                   removeCartFunction: () async {
-                                await Provider.of<CartItemCounter>(context,
-                                        listen: false)
-                                    .removeItemFromCart(model.shortInfo).then((value){
-                                  setState(() {
-                                    EcommerceApp.sharedPreferences
-                                        .getStringList(EcommerceApp.userCartList);
-                                  });
-                                });
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                  content: Text('Removed from cart'),
-                                  duration: Duration(seconds: 3),
-                                  action: SnackBarAction(
-                                    label: 'UNDO!',
-                                    onPressed: () async{
-                                      await Provider.of<CartItemCounter>(context,
-                                          listen: false)
-                                          .addItemToCart(model.shortInfo,context).then((v){
-                                         setState(() {
-                                           EcommerceApp.sharedPreferences
-                                               .getStringList(EcommerceApp.userCartList);
-                                           totalAmount = model.price + totalAmount;
-                                         });
-                                       });
-                                    },
+                                    showDialog(
+                                        context: context,
+                                        builder: (value){
+                                          return SimpleDialog(
+                                            title: Text(
+                                              'Are you sure ?',
+                                              style:
+                                              TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold),
+                                            ),
+                                            children: <Widget>[
+                                              selectOptionCard(
+                                                  "Ok",(){
+                                                    Provider.of<CartItemCounter>(context,
+                                                    listen: false)
+                                                    .removeItemFromCart(model.shortInfo).then((value){
+                                                  setState(() {
+                                                    EcommerceApp.sharedPreferences
+                                                        .getStringList(EcommerceApp.userCartList);
+                                                  });
+                                                  EcommerceApp.firestore.collection('items').doc(model.shortInfo).update({
+                                                    'productInCart' : false
+                                                  });
+                                                });
+                                                Navigator.pop(context);
+                                              }
+                                              ),
+                                              selectOptionCard(
+                                                  "Cancel",()=>  Navigator.pop(context)
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                    );
+                              },widget:  Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  color: themeMode == ThemeMode.dark
+                                      ? Colors.white
+                                      : Colors.black87,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(1),
+                                    child: Container(
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: themeMode == ThemeMode.dark
+                                            ? Theme.of(context).canvasColor
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(Icons.remove,
+                                                color: themeMode == ThemeMode.dark
+                                                    ? Colors.white
+                                                    : Colors.black87),
+                                            onPressed: () {
+                                              if(model.numberOfItem == 1){
+                                                // ignore: unnecessary_statements
+                                                    (){};
+                                              }else{
+                                                model.numberOfItem -- ;
+                                                EcommerceApp.firestore.collection('items').doc(model.shortInfo).update({
+                                                  'numberOfItem' : model.numberOfItem ,
+                                                });
+                                                setState(() {
+                                                  model.numberOfItem = model.numberOfItem ;
+                                                });
+                                              }
+                                            },
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text('${model.numberOfItem}'),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          IconButton(
+                                              icon: Icon(Icons.add,
+                                                  color: themeMode == ThemeMode.dark
+                                                      ? Colors.white
+                                                      : Colors.black87),
+                                              onPressed: () {
+                                                model.numberOfItem ++ ;
+                                                EcommerceApp.firestore.collection('items').doc(model.shortInfo).update({
+                                                  'numberOfItem' : model.numberOfItem ,
+                                                });
+                                                setState(() {
+                                                  model.numberOfItem = model.numberOfItem ;
+                                                });
+                                              }),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ));
-
-                              },
+                                ),
                               );
 
                             },
@@ -229,7 +294,28 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
-
+  Widget selectOptionCard(String text,Function function){
+    return Card(
+      color: Colors.black87,
+      child: Padding(
+        padding: const EdgeInsets.all(1),
+        child: InkWell(
+          onTap: function,
+          child: Container(
+            height: 30,
+            color: Colors.white,
+            child: Center(
+              child: Text(text,
+                  style: TextStyle(
+                      color: Colors.blue[900],
+                      fontSize: 15
+                  )),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
   noItemsInCard() {
     return SliverToBoxAdapter(
       child: Card(

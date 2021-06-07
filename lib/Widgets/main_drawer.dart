@@ -43,55 +43,49 @@ class MyDrawer extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-             Divider(
-                color: themeMode == ThemeMode.dark
-                    ? Colors.white
-                    : Colors.black87,
-                thickness: 1,
-              ),
             Column(
               children: <Widget>[
                 customListTile(themeMode,Icons.home,'Home',() {
                   Route route =
                   MaterialPageRoute(builder: (c) => StoreHome());
                   Navigator.pushReplacement(context, route);
-                }),
-                customDivider(themeMode),
+                },context),
+
                 customListTile(themeMode, Icons.reorder, 'My Orders', () {
                   Route route = MaterialPageRoute(builder: (c) => MyOrders());
                   Navigator.pushReplacement(context, route);
-                }),
-                customDivider(themeMode),
+                },context),
+
                 customListTile(themeMode, Icons.shopping_cart, 'My Cart', () {
                   Route route = MaterialPageRoute(builder: (c) => CartPage());
                   Navigator.push(context, route);
-                }),
-                customDivider(themeMode),
+                },context),
+
                 customListTile(themeMode, Icons.search, 'Search', () {
                   Route route =
                   MaterialPageRoute(builder: (c) => SearchProduct());
                   Navigator.pushReplacement(context, route);
-                }),
-                customDivider(themeMode),
+                },context),
+
                 customListTile(themeMode, Icons.add_location, 'Add new Address', () {
                   Route route =
                   MaterialPageRoute(builder: (c) => AddAddress());
                   Navigator.pushReplacement(context, route);
-                }),
-                customDivider(themeMode),
+                },context),
+
                 customListTile(themeMode, Icons.settings, 'Settings', () {
                   Route route =
                   MaterialPageRoute(builder: (c) => ThemesScreen());
                   Navigator.push(context, route);
-                }),
-                customDivider(themeMode),
+                },context),
+
                 customListTile(themeMode,  Icons.exit_to_app, 'Log Out', () {
                   EcommerceApp.auth.signOut().then((c) {
                     Route route =
                     MaterialPageRoute(builder: (c) => AuthenticScreen());
                     Navigator.pushReplacement(context, route);
                   });
-                }),
+                },context),
               ],
             ),
           ],
@@ -109,24 +103,41 @@ class MyDrawer extends StatelessWidget {
       endIndent: 50,
     );
   }
-  Widget customListTile(ThemeMode themeMode,IconData icon,String text,Function function){
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: themeMode == ThemeMode.dark
-            ? Colors.white
-            : Colors.blue[900],
+  Widget customListTile(ThemeMode themeMode,IconData icon,String text,Function function,context){
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
+    return Card(
+      semanticContainer: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
+      child:  Padding(
+        padding: EdgeInsets.all(1),
+        child: Container(
+          decoration: BoxDecoration(
+            color: themeMode == ThemeMode.dark
+                ? Theme.of(context).canvasColor
+                : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: ListTile(
+              leading: Icon(
+                icon,
+                color: themeMode == ThemeMode.dark
+                    ? Colors.white
+                    : Colors.blue[900],
+              ),
+              title: Text(text,
+                style: GoogleFonts.robotoCondensed(
+                  textStyle: TextStyle(
+                      color: themeMode == ThemeMode.dark
+                          ? Colors.white
+                          : Colors.blue[900],
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),),
+              onTap: function
+          ),
+        ),
       ),
-      title: Text(text,
-        style: GoogleFonts.robotoCondensed(
-          textStyle: TextStyle(
-              color: themeMode == ThemeMode.dark
-                  ? Colors.white
-                  : Colors.blue[900],
-              fontSize: 20,
-              fontWeight: FontWeight.bold),
-        ),),
-      onTap: function
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:commerce/Models/item.dart';
 import 'package:commerce/Store/storehome.dart';
-import 'package:commerce/Widgets/main_Drawer.dart';
+import 'package:commerce/Widgets/main_drawer.dart';
 import 'package:commerce/providers/theme_provider.dart';
 
 import 'package:flutter/material.dart';
@@ -15,8 +15,41 @@ class SearchProduct extends StatefulWidget {
 }
 
 class _SearchProductState extends State<SearchProduct> {
-  Future<QuerySnapshot> docList;
+ // Future<QuerySnapshot> docList;
 
+var queryResultSet = [];
+var tempSearchStore = [];
+initialSearch(value){
+  if(value.length == 0){
+    setState(() {
+      queryResultSet = [];
+      tempSearchStore = [];
+    });
+  }
+  var capitalizedValue = value.substring(0,1).toUpperCase() + value.substring(1);
+  if(queryResultSet.length ==0 && value.length ==1){
+searchByName(value).then((QuerySnapshot documents){
+  for(int i = 0;i<documents.docs.length;++i){
+    queryResultSet.add(documents.docs[i].data());
+  }
+});
+  }else{
+    tempSearchStore=[];
+    queryResultSet.forEach((element) {
+      if(element['shortInfo'].startsWith(capitalizedValue)){
+        setState(() {
+          tempSearchStore.add(element);
+        });
+      }
+    });
+  }
+}
+  searchByName(String searchField)  {
+    return  FirebaseFirestore.instance
+        .collection('items')
+        .where('searchKey', isEqualTo: searchField.substring(0,1).toUpperCase())
+        .get();
+  }
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
@@ -24,39 +57,29 @@ class _SearchProductState extends State<SearchProduct> {
     return SafeArea(
       child: Scaffold(
         drawer: MyDrawer(),
-        appBar: customAppBar(themeMode, context, 'Search',bottom: PreferredSize(
-          preferredSize: Size.fromHeight(60),
-          child: searchBar(),
-        )),
-        body: FutureBuilder<QuerySnapshot>(
-          future: docList,
-          builder: (context, snap) {
-            return snap.hasData
-                ? ListView.builder(
-              itemCount: snap.data.docs.length,
-              itemBuilder: (context, index) {
-                ItemModel model =
-                ItemModel.fromJson(snap.data.docs[index].data());
-                return productsInfo(model, context);
-              },
-            )
-                : Center(
-              child: Container(
-                height: 100,
-                child: Text('No products available...',
-                  style: GoogleFonts.arsenal(
-                      textStyle:  TextStyle(
-                      fontSize: 25, fontWeight: FontWeight.bold
-                  ),),),
-
-            ),);
-          },
+        appBar: customAppBar(themeMode, context, 'Search',
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(60),
+              child: searchBar(),
+            )),
+        body: GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 2,
+          mainAxisSpacing: 4,
+          childAspectRatio: 1/1.8,
+          primary: false,
+          shrinkWrap: true,
+          children: tempSearchStore.map((element) {
+            ItemModel itemModel =ItemModel.fromJson(element);
+            return productsInfo(itemModel, context);
+          } ).toList(),
         ),
       ),
     );
   }
-Widget searchBar(){
-  var mode = Provider.of<ThemeProvider>(context).tm;
+
+  Widget searchBar() {
+    var mode = Provider.of<ThemeProvider>(context).tm;
     return Card(
       margin: EdgeInsets.only(right: 10, left: 10),
       color: mode == ThemeMode.dark ? Colors.white : Colors.black87,
@@ -78,37 +101,37 @@ Widget searchBar(){
                 padding: EdgeInsets.only(left: 18),
                 child: TextField(
                   onChanged: (value) {
-                    startSearching(value);
+                   if(value.isEmpty){
+                     // ignore: unnecessary_statements
+                     (){};
+                   }else{
+                     initialSearch(value);
+                   }
                   },
-                  decoration: InputDecoration.collapsed(hintText: 'Search...',hintStyle: GoogleFonts.aBeeZee(
-                      textStyle: TextStyle(
-                          color: mode == ThemeMode.dark
-                              ? Colors.white
-                              : Colors.blue[900],
-                          fontSize: 17)
-                  )),
+                  decoration: InputDecoration.collapsed(
+                      hintText: 'Search...',
+                      hintStyle: GoogleFonts.aBeeZee(
+                          textStyle: TextStyle(
+                              color: mode == ThemeMode.dark
+                                  ? Colors.white
+                                  : Colors.blue[900],
+                              fontSize: 17))),
                 ),
               ),
             ),
             Spacer(),
             Padding(
-              padding: EdgeInsets.only(right: 12),
+              padding: EdgeInsets.only(right: 20),
               child: Icon(
                 Icons.search,
-                color:
-                mode == ThemeMode.dark ? Colors.white : Colors.blue[900],
+                color: mode == ThemeMode.dark ? Colors.white : Colors.blue[900],
               ),
             ),
           ],
         ),
       ),
     );
-}
-
-  Future startSearching(String query) async {
-    docList = FirebaseFirestore.instance
-        .collection('items')
-        .where('shortInfo', isGreaterThanOrEqualTo: query)
-        .get() ;
   }
+
+
 }

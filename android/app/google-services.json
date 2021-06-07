@@ -8,9 +8,75 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:552428650234:android:3069e67f741abd90071343",
+        "android_client_info": {
+          "package_name": "com.example.aaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552428650234-alvbhglofppko1qg35vf1tnrfuvcpahr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsDpbVKywF4LgN5IjoWsdPQOrWRw79lrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "552428650234-alvbhglofppko1qg35vf1tnrfuvcpahr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:552428650234:android:84c85e2079e01f8f071343",
         "android_client_info": {
           "package_name": "com.example.commerce"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552428650234-4ahkqj54g78vk2s1bsj2de2hginli0rl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.commerce",
+            "certificate_hash": "fe60308ece83f9cfe5e5e7efcc96dd520d06903c"
+          }
+        },
+        {
+          "client_id": "552428650234-alvbhglofppko1qg35vf1tnrfuvcpahr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsDpbVKywF4LgN5IjoWsdPQOrWRw79lrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "552428650234-alvbhglofppko1qg35vf1tnrfuvcpahr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552428650234:android:74333c7a61cd9041071343",
+        "android_client_info": {
+          "package_name": "com.example.storagetest"
         }
       },
       "oauth_client": [

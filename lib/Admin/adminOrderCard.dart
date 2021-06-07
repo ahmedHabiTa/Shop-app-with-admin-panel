@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commerce/Admin/adminOrderDetails.dart';
 import 'package:commerce/Models/item.dart';
 import 'package:commerce/Widgets/orderCard.dart';
-import 'package:commerce/providers/order_provider.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

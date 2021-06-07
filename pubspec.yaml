@@ -44,7 +44,9 @@ dependencies:
   flutter_colorpicker: ^0.4.0
   google_fonts: ^2.0.0
   carousel_slider: ^3.0.0
-
+  flutter_bloc: ^7.0.0
+  bloc: ^7.0.0
+  google_sign_in: ^4.5.1
 
 
 

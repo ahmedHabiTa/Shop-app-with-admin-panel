@@ -7,9 +7,11 @@ import 'package:commerce/Widgets/wideButton.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../Store/storehome.dart';
 import 'package:commerce/Config/config.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -20,6 +22,35 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = new TextEditingController();
   final TextEditingController _passwordController = new TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+//   Future<void> signInWithGoogle() async {
+//     final _googleSignIn = GoogleSignIn();
+//     final googleUser = await _googleSignIn.signIn();
+//     if (googleUser != null) {
+//       final googleAuth = await googleUser.authentication;
+//       if (googleAuth.idToken != null) {
+//         User firebaseUser;
+//         final userCredential = await FirebaseAuth.instance.signInWithCredential(
+//           GoogleAuthProvider.credential(
+//               idToken: googleAuth.idToken, accessToken: googleAuth.accessToken),
+//         ).then((value) => readData(firebaseUser)).then((value) {
+//           Route route =
+//           MaterialPageRoute(builder: (c) => StoreHome());
+//           Navigator.push(context, route);
+//         });
+//         return userCredential.user;
+//       }
+//     }else{
+//       Fluttertoast.showToast(msg: 'sign in Failed');
+//       throw FirebaseAuthException(message: "sign in Failed",code: "Error ....");
+//     }
+//   }
+//   Future<void> googleSignOut()async{
+//     final _googleSignIn = GoogleSignIn();
+// await _googleSignIn.signOut();
+// await FirebaseAuth.instance.signOut();
+// print('signOut');
+//   }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +70,10 @@ class _LoginState extends State<Login> {
             padding: EdgeInsets.all(8),
             child: Text(
               'Login to your account',
-              style: TextStyle(color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87),
+              style: TextStyle(
+                  color: themeMode == ThemeMode.dark
+                      ? Colors.white
+                      : Colors.black87),
             ),
           ),
           Form(
@@ -80,6 +114,10 @@ class _LoginState extends State<Login> {
                     );
             },
           ),
+          // SizedBox(
+          //   height: 10,
+          // ),
+         // IconButton(icon: Icon(Icons.event), onPressed: googleSignOut),
           SizedBox(
             height: 10,
           ),
@@ -90,12 +128,17 @@ class _LoginState extends State<Login> {
                   ),
               icon: Icon(
                 Icons.nature_people,
-                color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
+                color: themeMode == ThemeMode.dark
+                    ? Colors.white
+                    : Colors.blue[900],
               ),
               label: Text(
                 'Admin ? Login here !',
                 style: TextStyle(
-                    color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900], fontWeight: FontWeight.bold),
+                    color: themeMode == ThemeMode.dark
+                        ? Colors.white
+                        : Colors.blue[900],
+                    fontWeight: FontWeight.bold),
               ))
         ],
       ),

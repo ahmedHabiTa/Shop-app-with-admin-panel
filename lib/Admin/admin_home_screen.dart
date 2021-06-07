@@ -1,16 +1,15 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:commerce/Address/addAddress.dart';
 import 'package:commerce/Admin/admin_drawer.dart';
 import 'package:commerce/Admin/admin_product_details.dart';
 import 'package:commerce/Config/config.dart';
+import 'package:commerce/DialogBox/errorDialog.dart';
 import 'package:commerce/Models/item.dart';
 import 'package:commerce/Store/storehome.dart';
 import 'package:commerce/Widgets/customTextField.dart';
 import 'package:commerce/Widgets/loadingWidget.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,19 +34,16 @@ class _UploadPageState extends State<UploadPage>
   TextEditingController _shortInfoController = TextEditingController();
   TextEditingController _discountController = TextEditingController();
   TextEditingController _oldPriceController = TextEditingController();
-  TextEditingController _numberOdItemsController = TextEditingController();
 
-  //String productID = '';
+
   bool uploading = false;
   String imageUrl  ;
   ImagePicker imagePicker = ImagePicker();
   @override
   // ignore: must_call_super
   Widget build(BuildContext context) {
-
     return _image == null ? displayAdminHomeScreen() : displayAdminUploadScreen();
   }
-
   displayAdminHomeScreen() {
 
     var themeMode = Provider.of<ThemeProvider>(context).tm;
@@ -92,7 +88,6 @@ class _UploadPageState extends State<UploadPage>
       body: adminHomeScreen(),
     );
   }
-
   Widget adminHomeScreen() {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -212,11 +207,41 @@ class _UploadPageState extends State<UploadPage>
                       ), Colors.blue[300]),
                   ],
                 ),
+                SizedBox(height: 5,),
+                IconButton(
+                  icon: Icon(Icons.delete,color: Colors.red[900],),
+                  onPressed: () => deleteProduct(context,itemModel),
+                ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+  deleteProduct(context,ItemModel itemModel){
+    return showDialog(
+      context: context,
+      builder: (value){
+        return SimpleDialog(
+          title: Text(
+            'Are you sure ?',
+            style:
+            TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold),
+          ),
+          children: <Widget>[
+            selectOptionCard(
+                "Ok",(){
+              EcommerceApp.firestore.collection('items').doc(itemModel.shortInfo).delete() ;
+              Navigator.pop(context);
+            }
+            ),
+            selectOptionCard(
+                "Cancel",()=>  Navigator.pop(context)
+            ),
+          ],
+        );
+      }
     );
   }
 
@@ -231,38 +256,36 @@ class _UploadPageState extends State<UploadPage>
               TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold),
             ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: selectOptionCard("Capture with Camera"),
-                onPressed: capturePhotoWithCamera,
+              selectOptionCard(
+                  "Capture with Camera",capturePhotoWithCamera
               ),
-              SimpleDialogOption(
-                child: selectOptionCard("Select from Gallery"),
-                onPressed: pickPhotoFromGallery,
+              selectOptionCard(
+                  "Select from Gallery",pickPhotoFromGallery
               ),
-              SimpleDialogOption(
-                child: selectOptionCard("Cancel"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+              selectOptionCard(
+                  "Cancel",() => Navigator.pop(context)
               ),
             ],
           );
         });
   }
-  Widget selectOptionCard(String text){
+  Widget selectOptionCard(String text,Function function){
     return Card(
       color: Colors.black87,
       child: Padding(
         padding: const EdgeInsets.all(1),
-        child: Container(
-          height: 30,
-          color: Colors.white,
-          child: Center(
-            child: Text(text,
-                style: TextStyle(
-                  color: Colors.blue[900],
-                  fontSize: 15
-                )),
+        child: InkWell(
+          onTap: function,
+          child: Container(
+            height: 30,
+            color: Colors.white,
+            child: Center(
+              child: Text(text,
+                  style: TextStyle(
+                    color: Colors.blue[900],
+                    fontSize: 15
+                  )),
+            ),
           ),
         ),
       ),
@@ -313,30 +336,45 @@ class _UploadPageState extends State<UploadPage>
         leading: IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
             ),
             onPressed: clearFormInfo),
         actions: <Widget>[
-          Container(
+          uploading ?  circularProgress() : Container(
             margin: EdgeInsets.all(3),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: themeMode == ThemeMode.dark
                     ? Colors.white
                     : Colors.blue[900]),
-            child: IconButton(
+            child:  IconButton(
               icon: Icon(Icons.add,
                   color: themeMode == ThemeMode.dark
                       ? Colors.black87
                       : Colors.white),
-              onPressed: uploading ? null : () =>uploadImageAndSaveItemInfo(),
-            ),
+              onPressed: (){
+                _titleController.text.isNotEmpty &&
+                    _shortInfoController.text.isNotEmpty &&
+                    _priceController.text.isNotEmpty &&
+                    _oldPriceController.text.isNotEmpty &&
+                    _discountController.text.isNotEmpty  &&
+                    _descriptionController.text.isNotEmpty  ? uploadImageAndSaveItemInfo()
+                    : showDialog(
+                  context: context,
+                  builder: (c) {
+                    return ErrorAlertDialog(
+                      message: 'Complete all Information',
+                    );
+                  },
+                );
+              }),
           ),
         ],
       ),
       body: ListView(
         children: <Widget>[
-          uploading ? circularProgress() : Text(''),
+          //uploading ? circularProgress() : Text(''),
+          SizedBox(height: 10,),
           Center(
             child:  Container(
               width: MediaQuery.of(context).size.width*0.7 ,
@@ -381,12 +419,6 @@ class _UploadPageState extends State<UploadPage>
             data: Icons.perm_device_information,
           ),
           CustomTextField(
-            controller: _numberOdItemsController,
-            isObsecure: false,
-            hintText: 'Number Of Items',
-            data: Icons.perm_device_information,
-          ),
-          CustomTextField(
             controller: _descriptionController,
             isObsecure: false,
             hintText: 'Description',
@@ -406,7 +438,7 @@ class _UploadPageState extends State<UploadPage>
       _titleController.clear();
       _descriptionController.clear();
       _shortInfoController.clear();
-      _numberOdItemsController.clear();
+
 
     });
   }
@@ -440,21 +472,21 @@ class _UploadPageState extends State<UploadPage>
       "status" : "available",
       "thumbnailUrl" : imageUrl,
       "title" : _titleController.text.trim(),
-       "numberOfItem" : int.parse(_numberOdItemsController.text.trim()),
+       "numberOfItem" : 1,
        "discount" : int.parse(_discountController.text.trim()),
       "old_price" : int.parse(_oldPriceController.text.trim()),
+      "productInCart" : false,
     });
     setState(() {
       _image = null;
       uploading = false ;
-    // productID = '' ;
       _descriptionController.clear();
       _titleController.clear();
       _priceController.clear();
       _shortInfoController.clear();
       _oldPriceController.clear();
       _discountController.clear();
-      _numberOdItemsController.clear() ;
+
     });
   }
 }

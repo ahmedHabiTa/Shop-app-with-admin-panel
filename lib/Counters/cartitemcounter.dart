@@ -1,5 +1,6 @@
 
 import 'package:commerce/Config/config.dart';
+import 'package:commerce/Models/item.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -49,8 +50,8 @@ class CartItemCounter with ChangeNotifier {
       Fluttertoast.showToast(msg: "Item Added To Cart");
       EcommerceApp.sharedPreferences
           .setStringList(EcommerceApp.userCartList, tempCartList);
-
     });
+
     notifyListeners();
   }
 }

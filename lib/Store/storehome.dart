@@ -1,29 +1,31 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commerce/Config/config.dart';
-import 'package:commerce/Counters/ItemQuantity.dart';
+
+import 'package:commerce/Store/cart.dart';
 import 'package:commerce/Store/product_page.dart';
 import 'package:commerce/Counters/cartitemcounter.dart';
-import 'package:commerce/Widgets/customAppBar.dart';
 import 'package:commerce/Widgets/loadingWidget.dart';
-import 'package:commerce/Widgets/searchBox.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../Widgets/main_Drawer.dart';
+import '../Widgets/main_drawer.dart';
 import '../Models/item.dart';
+import 'Search.dart';
 
 double width;
 
 class StoreHome extends StatefulWidget {
+
   @override
   _StoreHomeState createState() => _StoreHomeState();
 }
 
 class _StoreHomeState extends State<StoreHome> {
+
   List<String> sliderImages = [
     'assets/slider_images/1615441020ydvqD.item_XXL_51889566_32a329591e022.jpeg',
     'assets/slider_images/1615450256e0bZk.item_XXL_7582156_7501823.jpeg',
@@ -42,11 +44,98 @@ class _StoreHomeState extends State<StoreHome> {
     width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-          appBar: customAppBar(themeMode, context, 'E-Shopping',
-              bottom: PreferredSize(
-                preferredSize: Size.fromHeight(60),
-                child: SearchBox(),
-              )),
+          appBar: AppBar(
+            elevation: 2,
+            backgroundColor: themeMode == ThemeMode.dark
+                ? Theme.of(context).canvasColor
+                : Colors.white,
+            iconTheme: IconThemeData(
+              color:
+                  themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
+            ),
+            title: Text(
+              'E-Shopping',
+              style: GoogleFonts.satisfy(
+                  textStyle: TextStyle(
+                      color: themeMode == ThemeMode.dark
+                          ? Colors.white
+                          : Colors.blue[900],
+                      fontSize: 30)),
+            ),
+            centerTitle: true,
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    size: 30,
+                    color: themeMode == ThemeMode.dark
+                        ? Colors.white
+                        : Colors.blue[900],
+                  ),
+                  onPressed: () {
+                    Route route = MaterialPageRoute(builder: (c) => SearchProduct());
+                    Navigator.pushReplacement(context, route);
+                  }),
+              Center(
+                child: Stack(
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(
+                        Icons.shopping_cart,
+                        color: themeMode == ThemeMode.dark
+                            ? Colors.white
+                            : Colors.blue[900],
+                      ),
+                      onPressed: () {
+                        Route route =
+                            MaterialPageRoute(builder: (c) => CartPage());
+                        Navigator.push(context, route);
+                      },
+                    ),
+                    Positioned(
+                      child: Stack(
+                        children: <Widget>[
+                          Icon(
+                            Icons.brightness_1,
+                            size: 20,
+                            color: Colors.orange[700],
+                          ),
+                          Positioned(
+                            top: 3,
+                            bottom: 4,
+                            left: 5,
+                            right: 4,
+                            child: Consumer<CartItemCounter>(
+                              builder: (context, counter, _) {
+                                return Text(
+                                  (EcommerceApp.sharedPreferences
+                                                  .getStringList(
+                                                      EcommerceApp.userCartList)
+                                                  .length ==
+                                              null
+                                          ? 0.toString()
+                                          : EcommerceApp.sharedPreferences
+                                                  .getStringList(
+                                                      EcommerceApp.userCartList)
+                                                  .length -
+                                              1)
+                                      .toString(),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
           drawer: MyDrawer(),
           body: SingleChildScrollView(
             child: Column(
@@ -150,7 +239,7 @@ class _StoreHomeState extends State<StoreHome> {
 }
 
 Widget productsInfo(ItemModel itemModel, BuildContext context,
-    {Color background, removeCartFunction}) {
+    {Color background, removeCartFunction,Widget widget}) {
   var themeMode = Provider.of<ThemeProvider>(context).tm;
 
   return Card(
@@ -192,12 +281,15 @@ Widget productsInfo(ItemModel itemModel, BuildContext context,
                       height: 160,
                       fit: BoxFit.contain,
                     ),
-                    if(itemModel.discount != 0)
-                    Container(
-                      height: 15,
-                      color: Colors.red,
-                      child: Text('Discount',style: TextStyle(color: Colors.white),),
-                    ),
+                    if (itemModel.discount != 0)
+                      Container(
+                        height: 15,
+                        color: Colors.red,
+                        child: Text(
+                          'Discount',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -220,21 +312,30 @@ Widget productsInfo(ItemModel itemModel, BuildContext context,
                   SizedBox(
                     width: 10,
                   ),
-                  cardPrice(Text('${(itemModel.price).toString()} EGP',
+                  cardPrice(
+                      Text(
+                        '${removeCartFunction == null ?(itemModel.price).toString() :(itemModel.price*itemModel.numberOfItem).toString()} EGP',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                         ),
-                      ), Colors.blue[900]),
-                  if(itemModel.discount != 0)
-                  cardPrice(Text(
-                        '${(itemModel.oldPrice).toString()} EGP',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            decoration: TextDecoration.lineThrough,
-                            decorationColor: Colors.black87),
-                      ), Colors.blue[300]),
+                      ),
+                      Colors.blue[900]),
+                  if (itemModel.discount != 0)
+                    if(removeCartFunction == null)
+                    cardPrice(
+                        Text(
+                          '${(itemModel.oldPrice).toString()} EGP',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Colors.black87),
+                        ),
+                        Colors.blue[300]),
+                  Spacer(),
+                  if(removeCartFunction != null )
+                    widget
                 ],
               ),
               Align(
@@ -242,14 +343,14 @@ Widget productsInfo(ItemModel itemModel, BuildContext context,
                   child: removeCartFunction == null
                       ? IconButton(
                           icon: Icon(
-                            Icons.add_shopping_cart,
+                              itemModel.productInCart == false ?Icons.add_shopping_cart : Icons.shopping_cart ,
                             color: themeMode == ThemeMode.dark
                                 ? Colors.white
                                 : Colors.blue[900],
                             size: 25,
                           ),
                           onPressed: () {
-                            checkItemInCart(itemModel.shortInfo, context);
+                            checkItemInCart(itemModel,itemModel.shortInfo, context);
                           },
                         )
                       : IconButton(
@@ -271,13 +372,17 @@ Widget productsInfo(ItemModel itemModel, BuildContext context,
   );
 }
 
-void checkItemInCart(String productID, BuildContext context) {
+void checkItemInCart(ItemModel itemModel,String productID, BuildContext context) {
   EcommerceApp.sharedPreferences
           .getStringList(EcommerceApp.userCartList)
           .contains(productID)
       ? Fluttertoast.showToast(msg: 'Item Already in Cart')
       : Provider.of<CartItemCounter>(context, listen: false)
-          .addItemToCart(productID, context);
+          .addItemToCart(productID, context).then((value){
+    EcommerceApp.firestore.collection('items').doc(itemModel.shortInfo).update({
+      'productInCart' : true
+    });
+  });
 }
 
 Widget cardPrice(Widget child, Color color) {

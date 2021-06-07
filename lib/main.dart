@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:commerce/Counters/ItemQuantity.dart';
+
 import 'package:commerce/Counters/cartitemcounter.dart';
+import 'package:commerce/Models/item.dart';
 import 'package:commerce/providers/order_provider.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,9 +30,7 @@ Future<void> main() async {
       ChangeNotifierProvider<CartItemCounter>(
         create: (c) => CartItemCounter(),
       ),
-      ChangeNotifierProvider<ItemQuantity>(
-        create: (c) => ItemQuantity(),
-      ),
+
       ChangeNotifierProvider<AddressChanger>(
         create: (c) => AddressChanger(),
       ),
