@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'login.dart';
-import 'register.dart';
-// import 'package:commerce/Config/config.dart';
+import 'login_screen.dart';
+import 'register_screen.dart';
 
-class AuthenticScreen extends StatefulWidget {
+class AuthenticScreen extends StatelessWidget {
   static const routeName = 'AuthenticScreen';
 
-  @override
-  _AuthenticScreenState createState() => _AuthenticScreenState();
-}
-
-class _AuthenticScreenState extends State<AuthenticScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -34,14 +28,20 @@ class _AuthenticScreenState extends State<AuthenticScreen> {
                     Icons.lock,
                     color: Colors.white,
                   ),
-                  text: 'Login',
+                  child: Text(
+                    'Login',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 Tab(
                   icon: Icon(
                     Icons.perm_contact_calendar,
                     color: Colors.white,
                   ),
-                  text: 'Register',
+                  child: Text(
+                    'Register',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
               indicatorColor: Colors.white,

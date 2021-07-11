@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:commerce/Config/config.dart';
 import 'package:commerce/Orders/OrderDetailsPage.dart';
 import 'package:commerce/Models/item.dart';
-import 'package:commerce/Widgets/wideButton.dart';
 import 'package:commerce/providers/order_provider.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +72,7 @@ class _OrderCardState extends State<OrderCard> {
                                 borderRadius: BorderRadius.circular(20),
                                 color: Colors.green
                             ),
+                            // ignore: deprecated_member_use
                             child: FlatButton(
                               onPressed: () {
                                 Route route = MaterialPageRoute(
@@ -93,6 +92,7 @@ class _OrderCardState extends State<OrderCard> {
                                 borderRadius: BorderRadius.circular(20),
                                 color: Colors.red[900]
                             ),
+                            // ignore: deprecated_member_use
                             child: FlatButton(
                               onPressed: () => Provider.of<OrderProvider>(context, listen: false)
                               .deleteOrder(context, widget.orderID),

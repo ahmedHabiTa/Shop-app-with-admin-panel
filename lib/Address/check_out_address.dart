@@ -10,16 +10,12 @@ import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'addAddress.dart';
-
 class Address extends StatefulWidget {
   final double totalAmount;
-
-  Address({Key key, this.totalAmount});
-
+  Address({this.totalAmount});
   @override
   _AddressState createState() => _AddressState();
 }
-
 class _AddressState extends State<Address> {
   @override
   Widget build(BuildContext context) {
@@ -165,13 +161,16 @@ class AddressCard extends StatefulWidget {
       this.totalAmount,
       this.value});
 
+
   @override
   _AddressCardState createState() => _AddressCardState();
 }
 
 class _AddressCardState extends State<AddressCard> {
+
   @override
   Widget build(BuildContext context) {
+
     double screenWidth = MediaQuery.of(context).size.width;
     var themeMode = Provider.of<ThemeProvider>(context).tm;
     return Card(
@@ -253,9 +252,10 @@ class _AddressCardState extends State<AddressCard> {
                         message: "Proceed",
                         onPressed: () {
                           Route route = MaterialPageRoute(
-                              builder: (c) => PaymentPage(
-                                  addressID: widget.addressID,
-                                  totalAmount: widget.totalAmount));
+                            builder: (c) => PaymentPage(
+                                addressID: widget.addressID,
+                                totalAmount: widget.totalAmount),
+                          );
                           Navigator.pushReplacement(context, route);
                         },
                       )
@@ -268,6 +268,8 @@ class _AddressCardState extends State<AddressCard> {
     );
   }
 }
+
+
 
 Widget keyText(String msg, context) {
   var themeMode = Provider.of<ThemeProvider>(context).tm;

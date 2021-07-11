@@ -6,7 +6,6 @@ import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-int counter = 0;
 
 class AdminOrderCard extends StatelessWidget {
   final int itemCount;
@@ -15,7 +14,7 @@ class AdminOrderCard extends StatelessWidget {
   final String addressID;
   final String orderBy ;
   final int numberOfOrder ;
-  AdminOrderCard({Key key ,this.numberOfOrder, this.itemCount, this.data, this.orderID, this.addressID, this.orderBy}) : super(key: key);
+  AdminOrderCard({this.numberOfOrder, this.itemCount, this.data, this.orderID, this.addressID, this.orderBy}) ;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +64,7 @@ class AdminOrderCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                             color: Colors.green
                         ),
+                        // ignore: deprecated_member_use
                         child: FlatButton(
                           onPressed: () {
                             Route route = MaterialPageRoute(

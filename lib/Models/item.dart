@@ -14,8 +14,7 @@ class ItemModel {
   int numberOfItem  ;
   bool productInCart ;
 
-  ItemModel(
-      {this.title,
+  ItemModel({this.title,
         this.shortInfo,
         this.publishedDate,
         this.thumbnailUrl,

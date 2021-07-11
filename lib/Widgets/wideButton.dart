@@ -20,6 +20,7 @@ class WideButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900]
         ),
+        // ignore: deprecated_member_use
         child: FlatButton(
           onPressed: onPressed,
           child: Text(message,style: TextStyle(color: themeMode == ThemeMode.dark ? Colors.black87 : Colors.white),),

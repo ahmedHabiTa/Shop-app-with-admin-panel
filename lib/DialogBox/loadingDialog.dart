@@ -1,11 +1,11 @@
 import 'package:commerce/Widgets/loadingWidget.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 
 class LoadingAlertDialog extends StatelessWidget
 {
   final String message;
-  const LoadingAlertDialog({Key key, this.message}) : super(key: key);
+  const LoadingAlertDialog({ this.message}) ;
 
   @override
   Widget build(BuildContext context)

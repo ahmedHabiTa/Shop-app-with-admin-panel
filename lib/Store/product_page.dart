@@ -2,33 +2,29 @@ import 'package:commerce/Config/config.dart';
 import 'package:commerce/Store/product_detailed_description.dart';
 import 'package:commerce/Store/storehome.dart';
 import 'package:commerce/Widgets/customAppBar.dart';
-import 'package:commerce/Widgets/main_drawer.dart';
 import 'package:commerce/Models/item.dart';
-import 'package:commerce/Widgets/wideButton.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 class ProductPage extends StatefulWidget {
   final ItemModel itemModel;
-
   ProductPage({this.itemModel});
-
   @override
   _ProductPageState createState() => _ProductPageState();
 }
-
 class _ProductPageState extends State<ProductPage> {
-  int numberOfProducts = 0 ;
+  int numberOfProducts = 0;
+
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: WideButton(
-          message: "Add to Cart",
-          onPressed: () => checkItemInCart(widget.itemModel,widget.itemModel.shortInfo, context),
-        ),
+        // floatingActionButton: WideButton(
+        //   message: "Add to Cart",
+        //   onPressed: () => checkItemInCart(
+        //       widget.itemModel, widget.itemModel.shortInfo, context),
+        // ),
         appBar: customAppBar(themeMode, context, ''),
         //drawer: MyDrawer(),
         body: SingleChildScrollView(
@@ -36,11 +32,13 @@ class _ProductPageState extends State<ProductPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(left :12.0),
+                padding: const EdgeInsets.only(left: 12.0),
                 child: Center(
                   child: Text(
                     widget.itemModel.title,
-                      style: Theme.of(context).textTheme.headline3,maxLines: 2,),
+                    style: Theme.of(context).textTheme.headline3,
+                    maxLines: 2,
+                  ),
                 ),
               ),
               SizedBox(
@@ -56,11 +54,13 @@ class _ProductPageState extends State<ProductPage> {
                       width: 300,
                       fit: BoxFit.contain,
                     ),
-                    if(widget.itemModel.discount != 0)
+                    if (widget.itemModel.discount != 0)
                       Container(
                         height: 22,
                         color: Colors.red,
-                        child: Text('Discount',style: TextStyle(color: Colors.white,fontSize: 20)),
+                        child: Text('Discount',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20)),
                       ),
                   ],
                 ),
@@ -72,7 +72,9 @@ class _ProductPageState extends State<ProductPage> {
                 padding: const EdgeInsets.only(left: 20),
                 child: Row(
                   children: [
-                    Text("EGP  "+ '${widget.itemModel.price*widget.itemModel.numberOfItem}',
+                    Text(
+                        "EGP  " +
+                            '${widget.itemModel.price * widget.itemModel.numberOfItem}',
                         style: Theme.of(context).textTheme.headline3),
                     SizedBox(
                       width: 15,
@@ -101,18 +103,23 @@ class _ProductPageState extends State<ProductPage> {
                                         ? Colors.white
                                         : Colors.black87),
                                 onPressed: () {
-                                 if(widget.itemModel.numberOfItem == 1){
-                                   // ignore: unnecessary_statements
-                                   (){};
-                                 }else{
-                                   widget.itemModel.numberOfItem -- ;
-                                   EcommerceApp.firestore.collection('items').doc(widget.itemModel.shortInfo).update({
-                                     'numberOfItem' : widget.itemModel.numberOfItem ,
-                                   });
-                                   setState(() {
-                                     widget.itemModel.numberOfItem = widget.itemModel.numberOfItem ;
-                                   });
-                                 }
+                                  if (widget.itemModel.numberOfItem == 1) {
+                                    // ignore: unnecessary_statements
+                                    () {};
+                                  } else {
+                                    widget.itemModel.numberOfItem--;
+                                    EcommerceApp.firestore
+                                        .collection('items')
+                                        .doc(widget.itemModel.shortInfo)
+                                        .update({
+                                      'numberOfItem':
+                                          widget.itemModel.numberOfItem,
+                                    });
+                                    setState(() {
+                                      widget.itemModel.numberOfItem =
+                                          widget.itemModel.numberOfItem;
+                                    });
+                                  }
                                 },
                               ),
                               SizedBox(
@@ -128,19 +135,28 @@ class _ProductPageState extends State<ProductPage> {
                                           ? Colors.white
                                           : Colors.black87),
                                   onPressed: () {
-                                    widget.itemModel.numberOfItem ++ ;
-                                   EcommerceApp.firestore.collection('items').doc(widget.itemModel.shortInfo).update({
-                                     'numberOfItem' : widget.itemModel.numberOfItem ,
-                                   });
-                                   setState(() {
-                                     widget.itemModel.numberOfItem = widget.itemModel.numberOfItem ;
-                                   });
+                                    widget.itemModel.numberOfItem++;
+                                    EcommerceApp.firestore
+                                        .collection('items')
+                                        .doc(widget.itemModel.shortInfo)
+                                        .update({
+                                      'numberOfItem':
+                                          widget.itemModel.numberOfItem,
+                                    });
+                                    setState(() {
+                                      widget.itemModel.numberOfItem =
+                                          widget.itemModel.numberOfItem;
+                                    });
                                   }),
                             ],
                           ),
                         ),
                       ),
                     ),
+                    IconButton(
+                        icon: Icon(Icons.add_shopping_cart,color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,),
+                        onPressed: () => checkItemInCart(widget.itemModel,
+                            widget.itemModel.shortInfo, context)),
                   ],
                 ),
               ),
@@ -150,9 +166,8 @@ class _ProductPageState extends State<ProductPage> {
               Card(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
-                color: themeMode == ThemeMode.dark
-                    ? Colors.white
-                    : Colors.black87,
+                color:
+                    themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
                 child: Padding(
                   padding: EdgeInsets.all(1),
                   child: Container(
@@ -167,9 +182,11 @@ class _ProductPageState extends State<ProductPage> {
                       padding: const EdgeInsets.all(12.0),
                       child: Center(
                         child: InkWell(
-                          onTap: (){
+                          onTap: () {
                             Route route = MaterialPageRoute(
-                                builder: (c) => ProductDetailedDescription(itemModel: widget.itemModel ,));
+                                builder: (c) => ProductDetailedDescription(
+                                      itemModel: widget.itemModel,
+                                    ));
                             Navigator.push(context, route);
                           },
                           child: Text(

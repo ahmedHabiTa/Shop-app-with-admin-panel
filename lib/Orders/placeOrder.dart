@@ -1,23 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commerce/Config/config.dart';
-import 'package:commerce/Models/item.dart';
 import 'package:commerce/Store/storehome.dart';
 import 'package:commerce/Counters/cartitemcounter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-
 class PaymentPage extends StatefulWidget {
   final String addressID;
   final double totalAmount;
-
   PaymentPage({this.addressID, this.totalAmount});
-
   @override
   _PaymentPageState createState() => _PaymentPageState();
 }
-
 class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
@@ -41,6 +36,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     color: Colors.blue[900],
                   borderRadius: BorderRadius.circular(20)
                 ),
+                // ignore: deprecated_member_use
                 child: FlatButton(
                   padding: EdgeInsets.all(8),
                   splashColor: Colors.deepOrange,

@@ -1,12 +1,14 @@
 import 'package:commerce/Admin/admin_orders_screen.dart';
-import 'package:commerce/Widgets/theme_settings.dart';
-import 'package:commerce/main.dart';
+import 'package:commerce/Config/config.dart';
+import 'package:commerce/Widgets/splash_screen.dart';
+import 'package:commerce/Widgets/theme_screen.dart';
+import 'package:commerce/constants.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
 class AdminDrawer extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
@@ -35,12 +37,6 @@ class AdminDrawer extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          Divider(
-            color: themeMode == ThemeMode.dark
-                ? Colors.white
-                : Colors.black87,
-            thickness: 1,
-          ),
           Column(
             children: [
               customListTile(
@@ -51,9 +47,8 @@ class AdminDrawer extends StatelessWidget {
                   Route route =
                       MaterialPageRoute(builder: (c) => AdminOrdersScreen());
                   Navigator.push(context, route);
-                },
+                },context
               ),
-              customDivider(themeMode),
               customListTile(
                 themeMode,
                 Icons.settings,
@@ -62,9 +57,8 @@ class AdminDrawer extends StatelessWidget {
                   Route route =
                       MaterialPageRoute(builder: (c) => ThemesScreen());
                   Navigator.push(context, route);
-                },
+                },context
               ),
-              customDivider(themeMode),
               customListTile(
                 themeMode,
                 Icons.logout,
@@ -73,44 +67,51 @@ class AdminDrawer extends StatelessWidget {
                   Route route =
                       MaterialPageRoute(builder: (c) => SplashScreen());
                   Navigator.pushReplacement(context, route);
-                },
+                  adminToken = false ;
+                  EcommerceApp.sharedPreferences.setBool('adminToken', adminToken);
+                },context
               ),
-              customDivider(themeMode),
             ],
           ),
         ],
       ),
     );
   }
-
-  Widget customListTile(
-      ThemeMode themeMode, IconData icon, String text, Function function) {
-    return ListTile(
-        leading: Icon(
-          icon,
-          color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
-        ),
-        title: Text(
-          text,
-          style: GoogleFonts.robotoCondensed(
-            textStyle: TextStyle(
+  Widget customListTile(ThemeMode themeMode,IconData icon,String text,Function function,context){
+    var themeMode = Provider.of<ThemeProvider>(context).tm;
+    return Card(
+      semanticContainer: true,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
+      child:  Padding(
+        padding: EdgeInsets.all(1),
+        child: Container(
+          decoration: BoxDecoration(
+            color: themeMode == ThemeMode.dark
+                ? Theme.of(context).canvasColor
+                : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: ListTile(
+              leading: Icon(
+                icon,
                 color: themeMode == ThemeMode.dark
                     ? Colors.white
                     : Colors.blue[900],
-                fontSize: 20,
-                fontWeight: FontWeight.bold),
+              ),
+              title: Text(text,
+                style: GoogleFonts.robotoCondensed(
+                  textStyle: TextStyle(
+                      color: themeMode == ThemeMode.dark
+                          ? Colors.white
+                          : Colors.blue[900],
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),),
+              onTap: function
           ),
         ),
-        onTap: function);
-  }
-
-  Widget customDivider(ThemeMode themeMode) {
-    return Divider(
-      height: 10,
-      color: themeMode == ThemeMode.dark ? Colors.white60 : Colors.black38,
-      thickness: 3,
-      indent: 50,
-      endIndent: 50,
+      ),
     );
   }
 }

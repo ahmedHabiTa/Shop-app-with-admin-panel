@@ -11,28 +11,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:commerce/Store/storehome.dart';
-
 class CartPage extends StatefulWidget {
-
   @override
   _CartPageState createState() => _CartPageState();
 }
-
 class _CartPageState extends State<CartPage> {
-
-
- // double totalAmount;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   //Provider.of<TotalAmount>(context).totalAmount = 0;
-  //   Provider.of<TotalAmount>(context, listen: false).display(0);
-  // }
-
-
-
-
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;

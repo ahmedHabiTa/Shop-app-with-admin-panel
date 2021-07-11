@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commerce/Config/config.dart';
-
 import 'package:commerce/Store/cart.dart';
 import 'package:commerce/Store/product_page.dart';
 import 'package:commerce/Counters/cartitemcounter.dart';
@@ -14,18 +13,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../Widgets/main_drawer.dart';
 import '../Models/item.dart';
+import '../constants.dart';
 import 'Search.dart';
-
 double width;
-
 class StoreHome extends StatefulWidget {
-
   @override
   _StoreHomeState createState() => _StoreHomeState();
 }
-
 class _StoreHomeState extends State<StoreHome> {
-
   List<String> sliderImages = [
     'assets/slider_images/1615441020ydvqD.item_XXL_51889566_32a329591e022.jpeg',
     'assets/slider_images/1615450256e0bZk.item_XXL_7582156_7501823.jpeg',
@@ -37,7 +32,6 @@ class _StoreHomeState extends State<StoreHome> {
     'assets/slider_images/16202548748OGFF.1.jpg',
     'assets/slider_images/1620867082asmxD.1.jpg',
   ];
-
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
@@ -73,7 +67,8 @@ class _StoreHomeState extends State<StoreHome> {
                         : Colors.blue[900],
                   ),
                   onPressed: () {
-                    Route route = MaterialPageRoute(builder: (c) => SearchProduct());
+                    Route route =
+                        MaterialPageRoute(builder: (c) => SearchProduct());
                     Navigator.pushReplacement(context, route);
                   }),
               Center(
@@ -115,8 +110,7 @@ class _StoreHomeState extends State<StoreHome> {
                                               null
                                           ? 0.toString()
                                           : EcommerceApp.sharedPreferences
-                                                  .getStringList(
-                                                      EcommerceApp.userCartList)
+                                                  .getStringList(EcommerceApp.userCartList)
                                                   .length -
                                               1)
                                       .toString(),
@@ -141,9 +135,9 @@ class _StoreHomeState extends State<StoreHome> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: 10,
-                ),
+                // SizedBox(
+                //   height: 10,
+                // ),
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
@@ -171,6 +165,11 @@ class _StoreHomeState extends State<StoreHome> {
                       );
                     }).toList(),
                     options: CarouselOptions(
+                      onPageChanged: (index,_) {
+                        setState((){
+                          carouselSliderDotIndex = index;
+                        });
+                      },
                       height: 180,
                       aspectRatio: 16 / 9,
                       viewportFraction: 1,
@@ -184,6 +183,12 @@ class _StoreHomeState extends State<StoreHome> {
                       enlargeCenterPage: true,
                       scrollDirection: Axis.horizontal,
                     )),
+                SizedBox(height: 5,),
+                Row(
+                  children: List.generate(sliderImages.length,
+                          (index) => carouselSliderDot(index: index)),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                ),
                 SizedBox(
                   height: 10,
                 ),
@@ -204,7 +209,6 @@ class _StoreHomeState extends State<StoreHome> {
                 StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection("items")
-                        .limit(15)
                         .orderBy("publishedDate", descending: true)
                         .snapshots(),
                     builder: (context, dataSnapshot) {
@@ -236,14 +240,12 @@ class _StoreHomeState extends State<StoreHome> {
           )),
     );
   }
+
 }
-
 Widget productsInfo(ItemModel itemModel, BuildContext context,
-    {Color background, removeCartFunction,Widget widget}) {
+    {Color background, removeCartFunction, Widget widget}) {
   var themeMode = Provider.of<ThemeProvider>(context).tm;
-
   return Card(
-    semanticContainer: true,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
     child: InkWell(
@@ -314,7 +316,7 @@ Widget productsInfo(ItemModel itemModel, BuildContext context,
                   ),
                   cardPrice(
                       Text(
-                        '${removeCartFunction == null ?(itemModel.price).toString() :(itemModel.price*itemModel.numberOfItem).toString()} EGP',
+                        '${removeCartFunction == null ? (itemModel.price).toString() : (itemModel.price * itemModel.numberOfItem).toString()} EGP',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -322,20 +324,19 @@ Widget productsInfo(ItemModel itemModel, BuildContext context,
                       ),
                       Colors.blue[900]),
                   if (itemModel.discount != 0)
-                    if(removeCartFunction == null)
-                    cardPrice(
-                        Text(
-                          '${(itemModel.oldPrice).toString()} EGP',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              decoration: TextDecoration.lineThrough,
-                              decorationColor: Colors.black87),
-                        ),
-                        Colors.blue[300]),
+                    if (removeCartFunction == null)
+                      cardPrice(
+                          Text(
+                            '${(itemModel.oldPrice).toString()} EGP',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                decoration: TextDecoration.lineThrough,
+                                decorationColor: Colors.black87),
+                          ),
+                          Colors.blue[300]),
                   Spacer(),
-                  if(removeCartFunction != null )
-                    widget
+                  if (removeCartFunction != null) widget
                 ],
               ),
               Align(
@@ -343,14 +344,15 @@ Widget productsInfo(ItemModel itemModel, BuildContext context,
                   child: removeCartFunction == null
                       ? IconButton(
                           icon: Icon(
-                              itemModel.productInCart == false ?Icons.add_shopping_cart : Icons.shopping_cart ,
-                            color: themeMode == ThemeMode.dark
-                                ? Colors.white
-                                : Colors.blue[900],
+                            itemModel.productInCart == false
+                                ? Icons.add_shopping_cart
+                                : Icons.shopping_cart,
+                            color: Theme.of(context).buttonColor,
                             size: 25,
                           ),
                           onPressed: () {
-                            checkItemInCart(itemModel,itemModel.shortInfo, context);
+                            checkItemInCart(
+                                itemModel, itemModel.shortInfo, context);
                           },
                         )
                       : IconButton(
@@ -372,28 +374,19 @@ Widget productsInfo(ItemModel itemModel, BuildContext context,
   );
 }
 
-void checkItemInCart(ItemModel itemModel,String productID, BuildContext context) {
+void checkItemInCart(ItemModel itemModel, String productID, BuildContext context) {
   EcommerceApp.sharedPreferences
           .getStringList(EcommerceApp.userCartList)
           .contains(productID)
       ? Fluttertoast.showToast(msg: 'Item Already in Cart')
       : Provider.of<CartItemCounter>(context, listen: false)
-          .addItemToCart(productID, context).then((value){
-    EcommerceApp.firestore.collection('items').doc(itemModel.shortInfo).update({
-      'productInCart' : true
-    });
-  });
+          .addItemToCart(productID, context)
+          .then((value) {
+          EcommerceApp.firestore
+              .collection('items')
+              .doc(itemModel.shortInfo)
+              .update({'productInCart': true});
+        });
 }
 
-Widget cardPrice(Widget child, Color color) {
-  return Container(
-    decoration: BoxDecoration(
-      shape: BoxShape.rectangle,
-      color: color,
-    ),
-    height: 25,
-    width: 80,
-    alignment: Alignment.topLeft,
-    child: Center(child: child),
-  );
-}
+

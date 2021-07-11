@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commerce/Admin/admin_drawer.dart';
-import 'package:commerce/Admin/admin_home_screen.dart';
 import 'package:commerce/Admin/admin_orders_screen.dart';
 import 'package:commerce/Config/config.dart';
 import 'package:commerce/Widgets/loadingWidget.dart';
@@ -8,21 +7,16 @@ import 'package:commerce/Models/address.dart';
 import 'package:commerce/Widgets/wideButton.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
-
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-
-
+import 'admin_home_page/admin_home_screen.dart';
 String getOrderId = "";
 class AdminOrderDetails extends StatelessWidget {
   final String orderID ;
   final String orderBy ;
   final String addressID ;
-
-  AdminOrderDetails({Key key,this.orderID, this.orderBy, this.addressID}): super (key:key);
-
+  AdminOrderDetails({this.orderID, this.orderBy, this.addressID});
   @override
   Widget build(BuildContext context) {
     getOrderId =orderID ;
@@ -258,7 +252,7 @@ class AdminShippingDetails extends StatelessWidget {
           padding: EdgeInsets.all(10),
           child: Center(
             child: WideButton(
-              message: 'Confirmed',
+              message: 'Confirm',
               onPressed:() {
                 confirmParcel(context,getOrderId);
               } ,
@@ -271,7 +265,6 @@ class AdminShippingDetails extends StatelessWidget {
   confirmParcel(BuildContext context,String myOrderId ){
     EcommerceApp.firestore.collection(EcommerceApp.collectionOrders)
         .doc(myOrderId).delete();
-
     getOrderId = "" ;
     Route route = MaterialPageRoute(builder: (c)=>UploadPage());
     Navigator.pushReplacement(context, route);

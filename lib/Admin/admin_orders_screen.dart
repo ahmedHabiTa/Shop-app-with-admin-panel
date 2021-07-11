@@ -6,15 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../Widgets/loadingWidget.dart';
-
-
-class AdminOrdersScreen extends StatefulWidget {
-  @override
-  _MyOrdersState createState() => _MyOrdersState();
-}
-
-
-class _MyOrdersState extends State<AdminOrdersScreen> {
+class AdminOrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm ;

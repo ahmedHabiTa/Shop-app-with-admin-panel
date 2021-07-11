@@ -1,17 +1,17 @@
-import 'package:commerce/Authentication/authenication.dart';
+import 'package:commerce/Authentication/authenication_screen.dart';
 import 'package:commerce/Config/config.dart';
 import 'package:commerce/Address/addAddress.dart';
 import 'package:commerce/Store/Search.dart';
 import 'package:commerce/Store/cart.dart';
 import 'package:commerce/Orders/orders_screen.dart';
 import 'package:commerce/Store/storehome.dart';
-import 'package:commerce/Widgets/theme_settings.dart';
+import 'package:commerce/Widgets/theme_screen.dart';
 import 'package:commerce/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
 class MyDrawer extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
@@ -50,7 +50,6 @@ class MyDrawer extends StatelessWidget {
                   MaterialPageRoute(builder: (c) => StoreHome());
                   Navigator.pushReplacement(context, route);
                 },context),
-
                 customListTile(themeMode, Icons.reorder, 'My Orders', () {
                   Route route = MaterialPageRoute(builder: (c) => MyOrders());
                   Navigator.pushReplacement(context, route);
@@ -93,50 +92,39 @@ class MyDrawer extends StatelessWidget {
       ),
     );
   }
-
-  Widget customDivider(ThemeMode themeMode) {
-    return Divider(
-      height: 10,
-      color: themeMode == ThemeMode.dark ? Colors.white60 : Colors.black38,
-      thickness: 3,
-      indent: 50,
-      endIndent: 50,
-    );
-  }
   Widget customListTile(ThemeMode themeMode,IconData icon,String text,Function function,context){
     var themeMode = Provider.of<ThemeProvider>(context).tm;
     return Card(
-      semanticContainer: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
       child:  Padding(
         padding: EdgeInsets.all(1),
-        child: Container(
-          decoration: BoxDecoration(
-            color: themeMode == ThemeMode.dark
-                ? Theme.of(context).canvasColor
-                : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: ListTile(
-              leading: Icon(
-                icon,
-                color: themeMode == ThemeMode.dark
-                    ? Colors.white
-                    : Colors.blue[900],
-              ),
-              title: Text(text,
-                style: GoogleFonts.robotoCondensed(
-                  textStyle: TextStyle(
-                      color: themeMode == ThemeMode.dark
-                          ? Colors.white
-                          : Colors.blue[900],
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),),
-              onTap: function
-          ),
-        ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: themeMode == ThemeMode.dark
+                  ? Theme.of(context).canvasColor
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ListTile(
+                leading: Icon(
+                  icon,
+                  color: themeMode == ThemeMode.dark
+                      ? Colors.white
+                      : Colors.blue[900],
+                ),
+                title: Text(text,
+                  style: GoogleFonts.robotoCondensed(
+                    textStyle: TextStyle(
+                        color: themeMode == ThemeMode.dark
+                            ? Colors.white
+                            : Colors.blue[900],
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),),
+                onTap: function
+            ),
+          )
       ),
     );
   }

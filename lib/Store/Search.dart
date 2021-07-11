@@ -2,21 +2,16 @@ import 'package:commerce/Models/item.dart';
 import 'package:commerce/Store/storehome.dart';
 import 'package:commerce/Widgets/main_drawer.dart';
 import 'package:commerce/providers/theme_provider.dart';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../Widgets/customAppBar.dart';
-
 class SearchProduct extends StatefulWidget {
   @override
   _SearchProductState createState() => new _SearchProductState();
 }
-
 class _SearchProductState extends State<SearchProduct> {
- // Future<QuerySnapshot> docList;
-
 var queryResultSet = [];
 var tempSearchStore = [];
 initialSearch(value){
@@ -62,22 +57,25 @@ searchByName(value).then((QuerySnapshot documents){
               preferredSize: Size.fromHeight(60),
               child: searchBar(),
             )),
-        body: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 2,
-          mainAxisSpacing: 4,
-          childAspectRatio: 1/1.8,
-          primary: false,
-          shrinkWrap: true,
-          children: tempSearchStore.map((element) {
-            ItemModel itemModel =ItemModel.fromJson(element);
-            return productsInfo(itemModel, context);
-          } ).toList(),
+        body: StreamBuilder(
+         builder: (context,_){
+           return GridView.count(
+             crossAxisCount: 2,
+             crossAxisSpacing: 2,
+             mainAxisSpacing: 4,
+             childAspectRatio: 1/1.8,
+             primary: false,
+             shrinkWrap: true,
+             children: tempSearchStore.map((element) {
+               ItemModel itemModel =ItemModel.fromJson(element);
+               return productsInfo(itemModel, context);
+             }).toList(),
+           );
+         },
         ),
       ),
     );
   }
-
   Widget searchBar() {
     var mode = Provider.of<ThemeProvider>(context).tm;
     return Card(

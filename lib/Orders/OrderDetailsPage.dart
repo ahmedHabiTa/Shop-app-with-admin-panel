@@ -10,14 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 String getOrderId = "";
-
 class OrderDetails extends StatelessWidget {
   final String orderID;
-
   OrderDetails({Key key, this.orderID});
-
   @override
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
@@ -128,9 +124,7 @@ class OrderDetails extends StatelessWidget {
 
 class StatusBanner extends StatelessWidget {
   final bool status;
-
-  StatusBanner({Key key, this.status}) : super(key: key);
-
+  StatusBanner({ this.status}) ;
   @override
   Widget build(BuildContext context) {
     String msg;
@@ -193,7 +187,7 @@ class StatusBanner extends StatelessWidget {
 class ShippingDetails extends StatelessWidget {
   final AddressModel model;
 
-  ShippingDetails({Key key, this.model});
+  ShippingDetails({this.model});
 
   @override
   Widget build(BuildContext context) {
