@@ -16,8 +16,8 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
+    return Scaffold(
+      body: Container(
         color: Colors.white,
         child: Center(
           child: Column(
@@ -30,13 +30,11 @@ class _PaymentPageState extends State<PaymentPage> {
               SizedBox(
                 height: 10,
               ),
-              // ignore: deprecated_member_use
               Container(
                 decoration: BoxDecoration(
                     color: Colors.blue[900],
                   borderRadius: BorderRadius.circular(20)
                 ),
-                // ignore: deprecated_member_use
                 child: FlatButton(
                   padding: EdgeInsets.all(8),
                   splashColor: Colors.deepOrange,
@@ -97,7 +95,6 @@ class _PaymentPageState extends State<PaymentPage> {
       Navigator.pushReplacement(context, route);
     });
   }
-
   Future writeOrderDetailsForUser(Map<String, dynamic> data) async {
     await EcommerceApp.firestore
         .collection(EcommerceApp.collectionUser)
@@ -107,7 +104,6 @@ class _PaymentPageState extends State<PaymentPage> {
             data['orderTime'])
         .set(data);
   }
-
   Future writeOrderDetailsForAdmin(Map<String, dynamic> data) async {
     await EcommerceApp.firestore
         .collection(EcommerceApp.collectionOrders)

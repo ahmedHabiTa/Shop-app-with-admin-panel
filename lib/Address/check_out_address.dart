@@ -27,19 +27,16 @@ class _AddressState extends State<Address> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Center(
-                    child: Text('Select Address',
-                        style: TextStyle(
-                            color: themeMode == ThemeMode.dark
-                                ? Colors.white
-                                : Colors.blue[900],
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20))),
-              ),
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: Center(
+                  child: Text('Select Address',
+                      style: TextStyle(
+                          color: themeMode == ThemeMode.dark
+                              ? Colors.white
+                              : Colors.blue[900],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20))),
             ),
             Consumer<AddressChanger>(builder: (context, address, c) {
               return Flexible(
@@ -174,7 +171,6 @@ class _AddressCardState extends State<AddressCard> {
     double screenWidth = MediaQuery.of(context).size.width;
     var themeMode = Provider.of<ThemeProvider>(context).tm;
     return Card(
-      semanticContainer: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       color: themeMode == ThemeMode.dark ? Colors.white : Colors.black87,
       child: InkWell(

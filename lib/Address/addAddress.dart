@@ -60,15 +60,12 @@ class AddAddress extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Center(
-                    child: Text('Add new Address',
-                        style: TextStyle(
-                            color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],fontSize: 18),),
-                  ),
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: Center(
+                  child: Text('Add new Address',
+                    style: TextStyle(
+                        color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],fontSize: 18),),
                 ),
               ),
               Form(
@@ -121,27 +118,29 @@ class MyTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     var themeMode = Provider.of<ThemeProvider>(context).tm;
     return Card(
-      semanticContainer: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       color: themeMode == ThemeMode.dark ? Colors.white : Colors.blue[900],
-      child: Container(
-        margin: EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: themeMode == ThemeMode.dark
-              ? Theme.of(context).canvasColor
-              : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: TextFormField(
-            controller: controller,
-            decoration: InputDecoration.collapsed(
-              hintText: hint,
-              hintStyle: TextStyle(
-                  color: themeMode == ThemeMode.dark ? Colors.white : Colors.black),
+      child: Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: themeMode == ThemeMode.dark
+                ? Theme.of(context).canvasColor
+                : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: TextFormField(
+              controller: controller,
+              decoration: InputDecoration.collapsed(
+                hintText: hint,
+                hintStyle: TextStyle(
+                    color: themeMode == ThemeMode.dark ? Colors.white : Colors.black),
+              ),
+              validator: (value) => value.isEmpty ? "Field can not be empty" : null,
             ),
-            validator: (value) => value.isEmpty ? "Field can not be empty" : null,
           ),
         ),
       ),
